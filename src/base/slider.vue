@@ -71,7 +71,7 @@ export default {
      */
     setSliderWidth(isResize) {
       this.children = this.$refs.sliderGroup.children
-      
+
       // 这是sliderGruop的宽带 
       let width = 0
 
@@ -138,6 +138,10 @@ export default {
         this.slider.next()
       }, this.interval)
     }
+  },
+  // 组件销毁时 清楚延时器
+  destroyed() {
+    clearTimeout(this.timer)
   }
 }
 </script>

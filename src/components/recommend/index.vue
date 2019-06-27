@@ -1,6 +1,6 @@
 <template>
   <div class="recommend">
-    <div class="recommend-comtent">
+    <div class="recommend-content">
       <!-- 因为数据获取是异步过程 一开始就渲染数据为空 -->
       <div v-if="recommends.length" class="slider-wrapper">
         <slider>
@@ -14,7 +14,15 @@
       <div class="recommend-list">
         <h1 class="list-title">热门歌曲推荐</h1>
         <ul>
-
+          <li v-for="(v, k) in discList" :key="k" class="item">
+            <div class="icon">
+              <img :src="v.imgurl" height="60" width="60" alt="">
+            </div>
+            <div class="text">
+              <h2 class="name" v-html="v.creator.name"></h2>
+              <p class="desc" v-html="v.dissname"></p>
+            </div>
+          </li>
         </ul>
       </div>
     </div>
@@ -22,22 +30,29 @@
 </template>
 
 <script>
-import { getRecommend } from '@/api/recommend'
+import { getRecommend, getDiscList } from '@/api/recommend'
 import Slider from '@/base/slider'
 
 export default {
   data () {
     return {
-      recommends: []
+      recommends: [],
+      discList: []
     }
   },
   created () {
     this._getRecommend()
+    this._getDiscList()
   },
   methods: {
     _getRecommend() {
       getRecommend().then(res => {
         this.recommends = res.data.slider
+      })
+    },
+    _getDiscList() {
+      getDiscList().then(res => {
+        this.discList = res.data.list
       })
     }
   },
@@ -63,6 +78,7 @@ export default {
       width 100%
       overflow hidden
     .recommend-list
+      color red
       .list-title
         height 65px
         line-height 65px
