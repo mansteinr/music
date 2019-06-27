@@ -4,18 +4,22 @@
     <div class="slider-group" ref="sliderGroup">
       <slot></slot>
     </div>
-    <div class="dots"></div>
+    <div class="dots">
+      <span class="dot" v-for="(v, k) in dots" :key='k' :class="{active: currentPageIndex === k}"></span>
+    </div>
   </div>
 </template>
 
 <script>
 import BScroll from 'better-scroll'
 import  { addClass } from '@/common/js/dom'
+import { setTimeout, clearTimeout } from 'timers';
 
 export default {
   data() {
     return {
-      
+      dots: [],
+      currentPageIndex: 0
     }
   },
   props: {
@@ -42,15 +46,30 @@ export default {
      */
 
     this.$nextTick(() => {
-      this.setSliderWidth(),
+      this.setSliderWidth()
+      // 初始化原点
+      this.initDots()
       this.initSlider()
+
+      if (this.autoPlay) { // 判断是否自动播放
+        this.play()
+      }
+    })
+    /**
+     * 监听窗口改变事件，重新设置宽度即可
+     */
+    window.addEventListener('resize', () => {
+      //如果slider未初始化，则直接返回， 反之重新设置宽
+      if (!this.slider) return
+      this.setSliderWidth(true)
+      this.slider.refresh() // 重新刷新slider组件
     })
   },
   methods: {
     /**
      * 计算宽
      */
-    setSliderWidth() {
+    setSliderWidth(isResize) {
       this.children = this.$refs.sliderGroup.children
       
       // 这是sliderGruop的宽带 
@@ -67,22 +86,57 @@ export default {
         width += sliderWidth
       }
       // 如果是自动播放的话 需要左右都要克隆一个 实现无缝滚动
-      if (this.loop) {
+      // 判断是否未resize 如果是敞口改变 则不需要复制两个
+      if (this.loop && !isResize) {
         width += 2 * sliderWidth
       }
 
       this.$refs.sliderGroup.style.width = width + 'px'
     },
     initSlider() {
-      this.slider = new BScroll(this.$refs.slider, {
+     this.slider = new BScroll(this.$refs.slider, {
         scrollX: true,
         scrollY: false,
-        mementum: false,
-        snap: true,
-        snapLoop: this.loop,
-        snapSpeed: 400,
-        click: true
+        momentum: false,
+        snap: {
+          loop: this.loop,
+          threshold: 0.3,
+          speed: 400
+        }
       })
+      /**
+       * 监听better-scroll的scrollEnd事件
+       * 通过this.slider.getCurrentPage().pageX获取当前页面
+       */
+      this.slider.on('scrollEnd', () => {
+        let pageIndex = this.slider.getCurrentPage().pageX
+        // 如果是无缝轮播的话 pageIndex需要减一，因为他会在开始和结尾
+        // 复制一张
+        console.log(pageIndex)
+        // if (this.loop) {
+        //   pageIndex -= 1
+        // }
+        this.currentPageIndex = pageIndex
+
+        if (this.timer) {
+          clearTimeout(this.timer)
+          this.play()
+        }
+      })
+    },
+    // 初始化dots
+    initDots() {
+      this.dots = new Array(this.children.length)
+    },
+    /**
+     * 自动播放
+     */
+    play() {
+      let pageIndex =  this.currentPageIndex + 1
+      console.log(pageIndex, 'paly')
+      this.timer = setTimeout(() => {
+        this.slider.next()
+      }, this.interval)
     }
   }
 }
@@ -93,6 +147,7 @@ export default {
   
   .slider
     min-height 1px
+    position relative
     .slider-group
       position relative
       overflow hidden
@@ -121,7 +176,13 @@ export default {
         display inline-block
         margin 0 4px
         width 8px
-
+        height 8px
+        border-radius 50%
+        background $color-text-l
+        &.active
+          width 20px
+          border-radius 5px
+          background $color-text-l
 </style>
 
 
