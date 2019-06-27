@@ -1,11 +1,12 @@
 import originJSONP from 'jsonp'
+import { ERR_Ok } from '@/api/config'
 
 export default function jsonp (url, data, options) {
   url += (url.indexOf('?') < 0 ? '?' : '&') + param(data)
   
   return new Promise((resolve, reject) => {
     originJSONP(url, options, (err, data) => {
-      if (!err) {
+      if (!err && data.code === ERR_Ok) {
         resolve(data)
       } else {
         reject(err)
