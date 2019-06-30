@@ -1,6 +1,7 @@
 
-import axios from 'axios'
+// import axios from 'axios'
 import jsonp from '@/common/js/jsonp'
+import { axios } from '@/common/js/axios'
 import { commonParams, options } from './config.js'
 
 export function getRecommend() {
@@ -32,9 +33,11 @@ export function getDiscList() {
     loginUin: 0,
     picmid: 1
   })
-  return axios.get(url, {
-    params: data
-  }).then(res => {
-    return Promise.resolve(res.data)
-  })
+  console.log(axios)
+  return axios(url, data, 'get')
+  // return axios.get(url, {
+  //   params: data
+  // }).then(res => {
+  //   return Promise.resolve(res.data)
+  // })
 }

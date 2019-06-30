@@ -1,10 +1,7 @@
 import './index.styl'
  let installed = false
 // 避免重复install，设立flag
-// Loading.installed = false
 const loading =  {
-//  
-//  Vue.prototype.$loading = {}
  show(context = '') {
   if (installed) return
  // 如果页面有loading则不继续执行
