@@ -32,9 +32,10 @@
 </template>
 
 <script>
-import { getRecommend, getDiscList } from '@/api/recommend'
 import Slider from '@/base/slider'
 import Scroll from '@/base/scroll'
+// import loading from '@/base/loading'
+import { getRecommend, getDiscList } from '@/api/recommend'
 
 export default {
   data () {
@@ -46,7 +47,6 @@ export default {
   created () {
     this._getRecommend()
     this._getDiscList()
-    this.$loading.show()
   },
   methods: {
     _getRecommend() {
