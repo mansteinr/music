@@ -17,7 +17,7 @@
           <ul>
             <li v-for="(v, k) in discList" :key="k" class="item">
               <div class="icon">
-                <img @load="loadImage" :src="v.imgurl" height="60" width="60" alt="">
+                <img @load="loadImage" v-lazy="v.imgurl" height="60" width="60" alt="">
               </div>
               <div class="text">
                 <h2 class="name" v-html="v.creator.name"></h2>
@@ -45,7 +45,8 @@ export default {
   },
   created () {
     this._getRecommend()
-    this._getDiscList();
+    this._getDiscList()
+    this.$loading.show()
   },
   methods: {
     _getRecommend() {
@@ -62,6 +63,7 @@ export default {
     //  this._getRecommend() this._getDiscList() 不知道谁先返回数据
     // 这样的话better-scroll组件可以计算高度不够 少了上面轮播图img高度
     loadImage() {
+      // 只需要一次价值即可，不需要加载多次
       if (!this.checkLoaded) {
         this.$refs.scroll.refresh()
         this.checkLoaded = true

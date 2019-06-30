@@ -110,12 +110,6 @@ export default {
        */
       this.slider.on('scrollEnd', () => {
         let pageIndex = this.slider.getCurrentPage().pageX
-        // 如果是无缝轮播的话 pageIndex需要减一，因为他会在开始和结尾
-        // 复制一张
-        console.log(pageIndex)
-        // if (this.loop) {
-        //   pageIndex -= 1
-        // }
         this.currentPageIndex = pageIndex
 
         if (this.timer) {
@@ -132,8 +126,6 @@ export default {
      * 自动播放
      */
     play() {
-      let pageIndex =  this.currentPageIndex + 1
-      console.log(pageIndex, 'paly')
       this.timer = setTimeout(() => {
         this.slider.next()
       }, this.interval)

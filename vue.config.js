@@ -8,6 +8,13 @@ function resolve (dir) {
 }
 
 module.exports = {
+configureWebpack: {
+    resolve: {
+      alias: {
+        'vue$': 'vue/dist/vue.esm.js' 
+      }
+    }
+  },
   devServer: {
     hot: true, // 实时打包编译
     inline: true,  // 表示实时刷新浏览器
