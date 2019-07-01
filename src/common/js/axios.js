@@ -22,8 +22,6 @@ export function axios(url, data, method = 'post', responseType = 'json') {
       loading.hide()
       if(res.data.code === 0) {
         resolve(res.data)
-      } else {
-        console.log(res.data.code)
       }
     }).catch(err => {
       loading.hide()
