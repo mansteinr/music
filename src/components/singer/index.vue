@@ -1,11 +1,13 @@
 <template>
   <div class="singer">
-    rer
+    <list-view :data="singers"></list-view>
   </div>
 </template>
 
 <script>
 import { getSingerList } from '@/api/singer'
+import Singer from '@/common/js/singer'
+import ListView from '@/base/listview'
 
 const HOT_NAME = '热门'
 const HOT_SINGER_LEN = 10 //定义前10条为热门歌曲
@@ -19,39 +21,58 @@ export default {
   created() {
     this._getSingerList()
   },
+  components: {
+    ListView
+  },
   methods: {
     _getSingerList() {
+      let _this = this
       getSingerList().then(res => {
-        this.singers = res.data.list
+        this.singers = this.normallizeSingr(res.data.list)
       })
-    }
-  },
-  normallizeSingr(list) {
-    let map = {
-      hot: {
-        title: '热门',
-        items: []
-      }
-    }
-    list.forEach((v, k) => {
-      if(k < HOT_SINGER_LEN) {
-        map.hot.items.push({
-          id: v.Fsinger_mid,
-          name: v.Fsinger_name,
-          avatar: `https://y.gtimg.cn/music/photo_new/T001R150x150M000${v.Fsinger_mid}.jpg?max_age=2592000`
-        })
-      }
-      const key = v.Findex
-      if(!map[key]) {
-        map[key] = {
-          title: key,
+    },
+    normallizeSingr(list) {
+      let map = {
+        hot: {
+          title: '热门',
           items: []
         }
       }
-      
-    })
+      list.forEach((v, k) => {
+        if(k < HOT_SINGER_LEN) {
+          map.hot.items.push(new Singer({
+            id: v.Fsinger_mid,
+            name: v.Fsinger_name
+          }))
+        }
+        const key = v.Findex
+        if(!map[key]) {
+          map[key] = {
+            title: key,
+            items: []
+          }
+        }
+        
+        map[key].items.push(new Singer({
+          id: v.Fsinger_mid,
+          name: v.Fsinger_name
+        }))
+      })
+      // map数据序列化
+      let hot = [], ret = []
+      for(let key in map) {
+        if(map[key].title.match(/[a-zA-Z]/)) {
+          ret.push(map[key])
+        } else if (map[key].title === HOT_NAME) {
+          hot.push(map[key])
+        }
+      }
+      ret.sort((a, b) => {
+        return a.title.charCodeAt(0) - b.title.charCodeAt(0)
+      })
+      return [...hot, ...ret]
+    }
   }
-
 }
 </script>
 
