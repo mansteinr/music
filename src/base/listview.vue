@@ -1,5 +1,11 @@
 <template>
-  <scroll class="listview" :data = "data" ref="listview">
+  <scroll
+    @scroll="scroll"
+    :probeType="probeType"
+    :listenScroll="listenScroll"
+    class="listview" 
+    :data = "data" 
+    ref="listview">
     <ul>
       <li ref="listGroup" v-for="(v, k) in data" :key="k" class="list-group">
         <h2 class="list-group-title">{{ v.title }}</h2>
@@ -12,24 +18,51 @@
       </li>
     </ul>
     <!-- touchstart better-scroll封装好的 -->
-    <div class="list-shortcut" @touchstart="onShortcutTouchStart">
+    <!-- 阻止冒泡和浏览器滚动 -->
+    <div class="list-shortcut" 
+      @touchstart="onShortcutTouchStart"
+      @touchmove.stop.prevent="onShortcutTouchMove"
+    >
       <ul>
-        <li v-for="(v, k) in shotcutList" :key="k" class="item" :data-index="k">
+        <li v-for="(v, k) in shotcutList" 
+        :key="k" 
+        class="item"
+        :class="{'current': currentIndex === k}"
+        :data-index="k">
           {{ v }}
         </li>
       </ul>
     </div>
-     <div class="list-fixed" ref="fixed" v-show="fixedTitle">
-      <div class="fixed-title">{{fixedTitle}}</div>
-    </div>
+     <!-- <div class="list-fixed" ref="fixed" v-show="fixedTitle">
+      <div class="fixed-title">{{ fixedTitle }}</div>
+    </div> -->
   </scroll>
 </template>
 
 <script>
 import Scroll from '@/base/scroll'
 import { getData } from '@/common/js/dom'
+import { constants } from 'crypto';
+
+// 锚点的高度 这是通过css定义得来的
+const ANCHOR_HEIGHT = 18
 
 export default {
+  data() {
+    return {
+      scrollY: -1,
+      currentIndex: 0
+    }
+  },
+  created() {
+    // 这里不需要监听touch值的变化，只是方便各个函数之间
+    // 共享方便 所以不需要再再data里面创建
+    this.touch = {}
+    this.listenScroll = true
+    this.lisHeight = []
+    // 3 代表可以监听实时滚动
+    this.probeType = 3
+  },
   props: {
     data: {
       type: Array,
@@ -40,24 +73,96 @@ export default {
     Scroll
   },
   computed: {
+    // 截取快速索引的值
     shotcutList() {
       return this.data.map(v => {
         return v.title.substr(0, 1)
       })
-    },
-    fixedTitle () {
-      if (this.scrollY > 0) {
-        return ''
-      }
-      return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
     }
+    // fixedTitle () {
+    //   if (this.scrollY > 0) {
+    //     return ''
+    //   }
+    //   return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
+    // }
   },
   methods: {
     onShortcutTouchStart(e) {
-      debugger
-      // 点击时 对应dom的索引
+      // 点击时 对应dom的索引 将索引连接起来
       let anchorIndex = getData(e.target, 'index')
-      this.$refs.listview.scrollElement(this.$refs.listGroup[anchorIndex], 0)
+      // 记录开始的位置
+      this.touch.y1 = e.touches[0].pageY
+      // 记录开始时 锚点索引值
+      this.touch.anchorIndex = anchorIndex / 1
+      this._scrollTo(anchorIndex)
+   },
+    onShortcutTouchMove(e) {
+      
+      // 计算touchStart和touchEnd之间的距离，确定滚动到第几个元素
+      this.touch.y2 = e.touches[0].pageY
+
+      // 计算偏移几个锚点 即旁边的索引的高度
+      let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0 // 再y轴上的偏移
+      // 后面的|0表示向下取整 相当Math.floor
+      // 计算得到滑动结束时  应该滑动到第几个锚点索引
+      let anchorIndex = this.touch.anchorIndex / 1 + delta 
+      this._scrollTo(anchorIndex)
+    },
+    _scrollTo(index) {
+      this.$refs.listview.scrollToElement(this.$refs.listGroup[index/1], 3)
+    },
+    // 计算左边每个歌手卡片的高度
+    _calculateHeight() {
+      this.lisHeight = []
+      const list = this.$refs.listGroup
+      let height = 0
+      this.lisHeight.push(height)
+      // 将第一个开始的高度累加 
+      list.forEach(v => {
+        height += v.clientHeight
+        this.lisHeight.push(height)
+      })
+
+    },
+    scroll(pos) {
+      this.scrollY = pos.y
+    }
+  },
+  watch: {
+    data() {
+      // 监听data 数据改变之后 
+      // dom更新完成之后再重新结算高度
+      this.$nextTick(() => {
+        this._calculateHeight()
+      })
+    },
+    scrollY(newY) {
+      // 通过上限和下限对比 来判断落在哪个区间
+      const lisHeight = this.lisHeight
+
+      // 当滚动到顶部，newY>0
+      if (newY > 0) {
+        this.currentIndex = 0
+        return
+      }
+
+      // 在中间部分滚动
+      lisHeight.forEach((v, k) => {
+        // console.log(v)
+        let height1 = v
+        let height2 = lisHeight[k + 1]
+        // console.log(height1, height2, newY)
+        // !height2 不存在表示是最后一个
+        console.log(k, 'opopopop')
+        if(-newY > height1 && -newY < height2) {
+          this.currentIndex = k
+          console.log(this.currentIndex, k)
+          // console.log('this.currenrwerwerwertIndex')
+          return
+        }
+      })
+      // console.log(lisHeight)
+      // this.currentIndex = 0
     }
   }
 }

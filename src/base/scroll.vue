@@ -6,11 +6,9 @@
 
 <script>
   import BScroll from 'better-scroll'
+import { setTimeout } from 'timers';
 
   export default {
-    // data() {
-      
-    // },
     props: {
       // 监听滚动事件类型，比如慢速滚动 快速滚动
       probeType: {
@@ -24,6 +22,10 @@
       data: {
         type: Array,
         default: () => []
+      },
+      listenScroll: { // scroll组件要不要监听滚动事件
+        type: Boolean,
+        default: false
       }
     },
     methods: {
@@ -33,6 +35,12 @@
           probeType: this.probeType,
           click: this.click
         })
+        // 监听滚动事件 并将实时位置派发给父组件
+        if (this.listenScroll) {
+          this.scroll.on('scroll', (pos) => {
+            this.$emit('scroll', pos)
+          })
+        }
       },
       enable() {
         this.scroll && this.scroll.enable()
@@ -51,9 +59,13 @@
       }
     },
     mounted() {
-      this.$nextTick(() => {
+      setTimeout(() => {
         this.initScroll()
-      })
+      }, 20)
+      // 用nextTick 无法监听到 scroll滚动事件
+      // this.$nextTick(() => {
+      //   this.initScroll()
+      // })
     },
     watch: {
       data() {
