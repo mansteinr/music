@@ -10,7 +10,7 @@
       <li ref="listGroup" v-for="(v, k) in data" :key="k" class="list-group">
         <h2 class="list-group-title">{{ v.title }}</h2>
         <ul>
-          <li v-for="(v1, k1) in v.items" :key="k1" class="list-group-item">
+          <li @click.stop="selectItem(v1)" v-for="(v1, k1) in v.items" :key="k1" class="list-group-item">
             <img v-lazy="v1.avatar" alt="" class="avatar">
             <span class="name">{{ v1.name }}</span>
           </li>
@@ -90,6 +90,9 @@ export default {
     }
   },
   methods: {
+    selectItem(v) {
+      this.$emit('selectItem', v)
+    },
     onShortcutTouchStart(e) {
       // 点击时 对应dom的索引 将索引连接起来
       let anchorIndex = getData(e.target, 'index')
@@ -213,7 +216,7 @@ export default {
         font-size $font-size-medium
   .list-shortcut
     position absolute
-    z-index 300
+    z-index 99
     right 0
     top 50%
     transform translateY(-50%)
