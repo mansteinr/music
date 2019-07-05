@@ -33,9 +33,10 @@
         </li>
       </ul>
     </div>
-     <!-- <div class="list-fixed" ref="fixed" v-show="fixedTitle">
+    <!-- 固定title -->
+     <div class="list-fixed" ref="fixed" v-show="fixedTitle">
       <div class="fixed-title">{{ fixedTitle }}</div>
-    </div> -->
+    </div>
   </scroll>
 </template>
 
@@ -45,10 +46,13 @@ import { getData } from '@/common/js/dom'
 
 // 锚点的高度 这是通过css定义得来的
 const ANCHOR_HEIGHT = 18
+// 固定标题的高度
+const TITLE_HEIGHT = 30
 
 export default {
   data() {
     return {
+      diff: -1,
       scrollY: -1,
       currentIndex: 0
     }
@@ -77,13 +81,13 @@ export default {
       return this.data.map(v => {
         return v.title.substr(0, 1)
       })
+    },
+    fixedTitle () {
+      if (this.scrollY > 0) {
+        return ''
+      }
+      return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
     }
-    // fixedTitle () {
-    //   if (this.scrollY > 0) {
-    //     return ''
-    //   }
-    //   return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
-    // }
   },
   methods: {
     onShortcutTouchStart(e) {
@@ -96,7 +100,6 @@ export default {
       this._scrollTo(anchorIndex)
    },
     onShortcutTouchMove(e) {
-      console.log(90)
       // 计算touchStart和touchEnd之间的距离，确定滚动到第几个元素
       this.touch.y2 = e.touches[0].pageY
 
@@ -109,8 +112,12 @@ export default {
     },
     _scrollTo(index) {
       if (!index && index !== 0) return
+      if(index < 0) {
+        index = 0
+      } else if(index > this.lisHeight.length -2) {
+        index = this.lisHeight.length -2
+      }
       this.scrollY = -this.lisHeight[index]
-      console.log(this.scrollY)
       this.$refs.listview.scrollToElement(this.$refs.listGroup[index/1], 3)
     },
     // 计算左边每个歌手卡片的高度
@@ -156,11 +163,18 @@ export default {
         // !height2 不存在表示是最后一个
         if(-newY >= height1 && -newY < height2) {
           this.currentIndex = k
+          this.diff = height2 + newY // 固定标题到下一个标题之间的距离
           return
         }
       })
       // 滚动到底部
       // this.currentIndex = this.lisHeight.length - 2
+    },
+    diff(newVal) {
+      let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
+      if(this.fixedTop === fixedTop) return // 
+      this.fixedTop = fixedTop
+      this.$refs.fixed.style.transform = `translate3d(0, ${fixedTop}px, 0)`
     }
   }
 }
@@ -216,18 +230,18 @@ export default {
       font-size: $font-size-small
       &.current
         color: $color-theme
-    .list-fixed
-      position absolute
-      top 0
-      left 0
-      width 100%
-      .fixed-title
-        height 30px
-        line-height 30px
-        padding-left 20px
-        font-size $font-size-small
-        color $color-text-l
-        background $color-highlight-background
+  .list-fixed
+    position absolute
+    top 0
+    left 0
+    width 100%
+    .fixed-title
+      height 30px
+      line-height 30px
+      padding-left 20px
+      font-size $font-size-small
+      color $color-text-l
+      background $color-highlight-background
 </style>
 
 
