@@ -20,7 +20,7 @@
     <!-- touchstart better-scroll封装好的 -->
     <!-- 阻止冒泡和浏览器滚动 -->
     <div class="list-shortcut" 
-      @touchstart="onShortcutTouchStart"
+      @touchstart.stop.prevent="onShortcutTouchStart"
       @touchmove.stop.prevent="onShortcutTouchMove"
     >
       <ul>
@@ -42,7 +42,6 @@
 <script>
 import Scroll from '@/base/scroll'
 import { getData } from '@/common/js/dom'
-import { constants } from 'crypto';
 
 // 锚点的高度 这是通过css定义得来的
 const ANCHOR_HEIGHT = 18
@@ -97,7 +96,7 @@ export default {
       this._scrollTo(anchorIndex)
    },
     onShortcutTouchMove(e) {
-      
+      console.log(90)
       // 计算touchStart和touchEnd之间的距离，确定滚动到第几个元素
       this.touch.y2 = e.touches[0].pageY
 
@@ -109,6 +108,9 @@ export default {
       this._scrollTo(anchorIndex)
     },
     _scrollTo(index) {
+      if (!index && index !== 0) return
+      this.scrollY = -this.lisHeight[index]
+      console.log(this.scrollY)
       this.$refs.listview.scrollToElement(this.$refs.listGroup[index/1], 3)
     },
     // 计算左边每个歌手卡片的高度
@@ -139,7 +141,8 @@ export default {
     scrollY(newY) {
       // 通过上限和下限对比 来判断落在哪个区间
       const lisHeight = this.lisHeight
-
+      // console.log(newY, newY > 0)
+      // debugger
       // 当滚动到顶部，newY>0
       if (newY > 0) {
         this.currentIndex = 0
@@ -148,21 +151,16 @@ export default {
 
       // 在中间部分滚动
       lisHeight.forEach((v, k) => {
-        // console.log(v)
         let height1 = v
         let height2 = lisHeight[k + 1]
-        // console.log(height1, height2, newY)
         // !height2 不存在表示是最后一个
-        console.log(k, 'opopopop')
-        if(-newY > height1 && -newY < height2) {
+        if(-newY >= height1 && -newY < height2) {
           this.currentIndex = k
-          console.log(this.currentIndex, k)
-          // console.log('this.currenrwerwerwertIndex')
           return
         }
       })
-      // console.log(lisHeight)
-      // this.currentIndex = 0
+      // 滚动到底部
+      // this.currentIndex = this.lisHeight.length - 2
     }
   }
 }
