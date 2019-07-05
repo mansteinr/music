@@ -6,9 +6,10 @@
 </template>
 
 <script>
-import { getSingerList } from '@/api/singer'
-import Singer from '@/common/js/singer'
 import ListView from '@/base/listview'
+import Singer from '@/common/js/singer'
+import { getSingerList } from '@/api/singer'
+import { mapMutations } from 'vuex'
 
 const HOT_NAME = '热门'
 const HOT_SINGER_LEN = 10 //定义前10条为热门歌曲
@@ -26,13 +27,27 @@ export default {
     ListView
   },
   methods: {
+    /**
+     * 通过mpaMutations将SET_SINGER映射为setSinger
+     */
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    }),
     selectSinger(v) {
       this.$router.push({
         path: `/singer/${v.id}`
       })
+      /**
+       * 通过该方法 实现了对mutations的提交
+       * 其实就是执行了 mutations.js中的
+       * [types.SET_SINGER] (state, singer) {
+            state.singer = singer
+          }
+          函数
+       */
+      this.setSinger(v)
     },
     _getSingerList() {
-      let _this = this
       getSingerList().then(res => {
         this.singers = this.normallizeSingr(res.data.list)
       })

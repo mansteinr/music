@@ -5,9 +5,26 @@
 </template>
 
 <script>
+/**
+ * 通过mapGetters去取mutations里面的值
+ */
+import { mapGetters } from 'vuex'
   export default {
     data() {
       return {}
+    },
+    computed: {
+      /**
+       * mapGetters只能再computed中映射
+       * 去取state中的数据
+       * 即是getter.sj中的 export const singer = state => state.singer
+       */
+      ...mapGetters([
+        'singer'
+      ])
+    },
+    created() {
+      console.log(this.singer)
     }
   }
 </script>
