@@ -9,9 +9,14 @@
  * 通过mapGetters去取mutations里面的值
  */
 import { mapGetters } from 'vuex'
+import { getSingerDetail } from '@/api/singer'
+  import { createSong, isValidMusic, processSongsUrl } from '@/common/js/song'
+
   export default {
     data() {
-      return {}
+      return {
+        songs: []
+      }
     },
     computed: {
       /**
@@ -24,7 +29,31 @@ import { mapGetters } from 'vuex'
       ])
     },
     created() {
-      console.log(this.singer)
+      this._singerDetail()
+    },
+    methods: {
+      _singerDetail() {
+        if(!this.singer.id) {
+          this.$router.push('/singer')
+          return
+        }
+        getSingerDetail(this.singer.id).then(res => {
+          processSongsUrl(this.normalizeSongs(res.data.list)).then((songs) => {
+            this.songs = songs
+            console.log(this.songs)
+          })
+        })
+      },
+      normalizeSongs(list) {
+        let ret = []
+        list.forEach((v, k) => {
+          let { musicData } = v
+          if (isValidMusic(musicData)) {
+            ret.push(createSong(musicData))
+          }
+        })
+        return ret
+      }
     }
   }
 </script>

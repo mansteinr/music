@@ -18,8 +18,6 @@ Vue.use(VueLazyLoad, {
 
 Vue.prototype.loading = loading
 
-console.log(process.env.NODE_ENV)
-
 new Vue({
   el: '#app',
   router,
