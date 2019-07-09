@@ -5,7 +5,14 @@
     </div>
     <h1 class="title" v-html="title"></h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage"></div>
-    <scroll :data="songs" class="list" ref="list">
+    <!-- bg-layer再歌曲文字下边 当文字上移的时候 它也跟着上移 -->
+    <div class="bg-layer" ref="layer"></div>
+    <scroll :data="songs" 
+      :listen-scroll="listenScroll" 
+      :probe-type="probeType" 
+      @scroll="scroll"
+      class="list" 
+      ref="list">
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
       </div>
@@ -17,7 +24,14 @@
 import Scroll from '@/base/scroll'
 import SongList from '@/base/song-list'
 
+// 不让layer滚到最上面 即最上面预留点位置
+const RESERVED_HEIGHT = 40 
 export default {
+  data() {
+    return {
+      scrollY: 0
+    }
+  },
   props: {
     bgImage: {
       type: String,
@@ -37,14 +51,47 @@ export default {
       return `background-image: url(${this.bgImage})`
     }
   },
+  methods: {
+    scroll(position) {
+      // 拿到y轴滚动偏移量 就可以设置layer的偏移量
+      this.scrollY = position.y
+    }
+  },
   components: {
     Scroll,
     SongList
   },
   mounted() {
+    // 记录背景图片的高度 防止layer层滚出去
+    this.imageHeight = this.$refs.bgImage.clientHeight
+    this.minTranslateY = -this.imageHeight + RESERVED_HEIGHT
     // this.$refs.list.$el取到dom对象
     // 这个高度无法开始设置 因为每个浏览器的大小不同 背景图片高度不一样
     this.$refs.list.$el.style.top = `${this.$refs.bgImage.clientHeight}px`
+  },
+  created() {
+    // 监听实时滚动
+    this.probeType = 3
+    this.listenScroll = true
+  },
+  watch: {
+    scrollY(newY) {
+      // 取最小值 防止layer滚出去
+      let translateY = Math.max(this.minTranslateY, newY), zIndex = 0
+      console.log(this.minTranslateY, newY)
+      this.$refs.layer.style['transform'] = `translate3d(0, ${translateY}px, 0)`
+      // 当layer滚到顶部 设置样式
+      if(newY < this.minTranslateY) {
+        zIndex = 10
+        this.$refs.bgImage.style.paddingTop = 0
+        this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`
+      } else {
+        this.$refs.bgImage.style.paddingTop = '70%'
+        this.$refs.bgImage.style.height = 0
+        zIndex = 0
+      }
+      this.$refs.bgImage.style.zIndex = zIndex
+    }
   }
 }
 </script>
