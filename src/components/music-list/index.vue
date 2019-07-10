@@ -1,10 +1,17 @@
 <template>
   <div class="music-list">
-    <div class="back">
+    <div class="back" @click="back">
       <i class="icon-back"></i>
     </div>
     <h1 class="title" v-html="title"></h1>
-    <div class="bg-image" :style="bgStyle" ref="bgImage"></div>
+    <div class="bg-image" :style="bgStyle" ref="bgImage">
+      <div class="play-wrapper">
+        <div class="play" v-show="songs.length>0" ref="playBtn">
+          <i class="icon-play"></i>
+          <span class="text">4324</span>
+        </div>
+      </div>
+    </div>
     <!-- bg-layer再歌曲文字下边 当文字上移的时候 它也跟着上移 -->
     <div class="bg-layer" ref="layer"></div>
     <scroll :data="songs" 
@@ -55,6 +62,9 @@ export default {
     scroll(position) {
       // 拿到y轴滚动偏移量 就可以设置layer的偏移量
       this.scrollY = position.y
+    },
+    back() {
+      this.$router.back()
     }
   },
   components: {
@@ -77,20 +87,35 @@ export default {
   watch: {
     scrollY(newY) {
       // 取最小值 防止layer滚出去
-      let translateY = Math.max(this.minTranslateY, newY), zIndex = 0
-      console.log(this.minTranslateY, newY)
+      let blur = 0, translateY = Math.max(this.minTranslateY, newY), zIndex = 0, scale = 1 
       this.$refs.layer.style['transform'] = `translate3d(0, ${translateY}px, 0)`
+      // 下拉的时候 计算背景图片缩放的比列
+      const percent = Math.abs(newY / this.imageHeight)
+      if(newY > 0) {
+        scale = 1 + percent
+        zIndex = 10
+      } else {
+        // 模糊度
+        blur = Math.min(20 * percent, 20)
+      }
+      // console.log(blur)
+      // this.$refs.bgImage.style['WebkitFilter'] = `blur(${blur})px`
       // 当layer滚到顶部 设置样式
       if(newY < this.minTranslateY) {
         zIndex = 10
+        this.$refs.playBtn.style.display='none'
         this.$refs.bgImage.style.paddingTop = 0
         this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`
       } else {
         this.$refs.bgImage.style.paddingTop = '70%'
         this.$refs.bgImage.style.height = 0
+        this.$refs.playBtn.style.display=''
         zIndex = 0
       }
       this.$refs.bgImage.style.zIndex = zIndex
+      this.$refs.bgImage.style['transform'] = `scale(${scale})`
+      // 苹果手机可以看到效果
+      this.$refs.bgImage.style['filter'] = `blur(${blur})px`
     }
   }
 }
@@ -137,7 +162,7 @@ export default {
       padding-top: 70%
       transform-origin: top
       background-size: cover
-      filter blur(2px)
+      // filter blur(1px)
       .play-wrapper
         position: absolute
         bottom: 20px
