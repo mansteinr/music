@@ -21,7 +21,7 @@
       class="list" 
       ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list @select="selectItem" :songs="songs"></song-list>
       </div>
     </scroll>
   </div>
@@ -30,6 +30,8 @@
 <script>
 import Scroll from '@/base/scroll'
 import SongList from '@/base/song-list'
+// 获取actions里面的是函数
+import { mapActions } from 'vuex'
 
 // 不让layer滚到最上面 即最上面预留点位置
 const RESERVED_HEIGHT = 40 
@@ -65,7 +67,17 @@ export default {
     },
     back() {
       this.$router.back()
-    }
+    },
+    // 接受子组件传递的信息
+    selectItem(item, index) {
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    },
+    ...mapActions([
+      'selectPlay'
+    ])
   },
   components: {
     Scroll,
