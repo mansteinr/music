@@ -20,11 +20,20 @@ export function axios(url, data, method = 'post', responseType = 'json') {
   return new Promise((resolve, reject) => {
     Axios(options).then(res => {
       loading.hide()
+
+      if (url.indexOf('getPurlUrl') > -1) {
+        resolve(res)
+        return
+      }
+      
       if(res.data.code === 0) {
         resolve(res.data)
+      } else {
+        console.log(90)
       }
     }).catch(err => {
       loading.hide()
+      
       if(err) {
         reject(err)
       }

@@ -1,9 +1,7 @@
 import './index.styl'
- let installed = false
-// 避免重复install，设立flag
+
 const loading =  {
- show(context = '') {
-  if (installed) return
+  show (context = '') {
  // 如果页面有loading则不继续执行
  if (document.querySelector('#vue-loading')) return
   // 1、创建构造器，定义loading模板
@@ -23,7 +21,6 @@ const loading =  {
     e.stopPropagation()
     e.preventDefault()
   })
-  installed = true
  },
  hide() {
   let tpl = document.querySelector('#vue-loading')

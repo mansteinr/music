@@ -1,8 +1,8 @@
-
-import axios from 'axios'
 import { ERR_Ok } from './config'
 import { getUid } from '@/common/js/uid'
 import { commonParams } from './config'
+import { axios } from '@/common/js/axios'
+// import axios from 'axios'
 
 const debug = process.env.NODE_ENV !== 'production'
 
@@ -18,12 +18,12 @@ export function getLyric (mid) {
     pcachetime: +new Date(),
     format: 'json'
   })
-
-  return axios.get(url, {
-    params: data
-  }).then((res) => {
-    return Promise.resolve(res.data)
-  })
+  return axios(url, data, 'get')
+  // return axios.get(url, {
+  //   params: data
+  // }).then((res) => {
+  //   return Promise.resolve(res.data)
+  // })
 }
 
 export function getSongsUrl (songs) {
@@ -49,20 +49,19 @@ export function getSongsUrl (songs) {
 
   return new Promise((resolve, reject) => {
     let tryTime = 3
-
     function request () {
-      return axios.post(url, {
+      return axios(url, {
         comm: data,
         req_0: urlMid
-      }).then((response) => {
+      }).then(response => {
         const res = response.data
         if (res.code === ERR_Ok) {
           let urlMid = res.req_0
           if (urlMid && urlMid.code === ERR_Ok) {
             const purlMap = {}
-            urlMid.data.midurlinfo.forEach((item) => {
-              if (item.purl) {
-                purlMap[item.songmid] = item.purl
+            urlMid.data.midurlinfo.forEach(v => {
+              if (v.purl) {
+                purlMap[v.songmid] = v.purl
               }
             })
             if (Object.keys(purlMap).length > 0) {

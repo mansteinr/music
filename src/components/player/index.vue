@@ -22,7 +22,7 @@
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd">
-                <img class="image" :src="currentSong.image">
+                <img class="image" :class="cdCls" :src="currentSong.image">
               </div>
             </div>
           </div>
@@ -36,7 +36,7 @@
               <i class="icon-prev"></i>
             </div>
             <div class="icon i-center">
-              <i class="icon-play"></i>
+              <i @click="togglePlaying" :class="playIcon"></i>
             </div>
             <div class="icon i-right">
               <i class="icon-next"></i>
@@ -51,19 +51,24 @@
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
-          <img height="40" width="40" :src="currentSong.image">
+          <div class="imgWrapper">
+            <img height="40" width="40"  :class="cdCls" :src="currentSong.image">
+          </div>
         </div>
         <div class="text">
           <h2 class="name" v-html="currentSong.name"></h2>
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
+          <i :class="miniIcon" @click.stop="togglePlaying"></i>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <!-- 播放音乐 -->
+    <audio ref="audio" :src="currentSong.url"></audio>
   </div>
 </template>
 
@@ -79,13 +84,28 @@ export default {
     return {}
   },
   computed: {
+    playIcon() {
+      return this.playing ? 'icon-pause' : 'icon-play'
+    },
+    miniIcon() {
+      return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+    },
+    cdCls() {
+      return this.playing ? 'play' : 'paused'
+    },
     ...mapGetters([
       'fullScreen',
       'playList',
-      'currentSong'
+      'currentSong',
+      'playing'
     ])
   },
   methods: {
+    // 切换暂停播放状态
+    togglePlaying() {
+      // 虽然改变了playing的状态 但是没暂停  这个在watch中完成的
+      this.setPlayingState(!this.playing)
+    },
     back() {
       this.setFullScreen(false)
     },
@@ -95,7 +115,6 @@ export default {
     // el表示动画左右的dom, done为回掉函数
     // done执行后会自动调到下个函数after-enter函数中
     enter(el, done) {
-      console.log('enter')
       // mini播放器移动到大播放器的唱片位置
       const  {x, y, scale } = this.getPosotionAndScale()
       // 定义动画
@@ -123,14 +142,12 @@ export default {
       animations.runAnimation(this.$refs.cdWrapper, 'move', done)
     },
     afterEnter() {
-      console.log('afterEnter')
       // 注销
       animations.unregisterAnimation('move')
       // 动画清空
       this.$refs.cdWrapper.style.animation = ''
     },
     leave(el, done) {
-      console.log('leave')
       // 离开的时候使用原生的 没有用到create-keyframe-animation插件
       this.$refs.cdWrapper.style.transition = 'all .4s'
       // 获取位置
@@ -140,13 +157,13 @@ export default {
       this.$refs.cdWrapper.addEventListener('transitionend', done)
     },
     afterLeave() {
-      console.log('afterLeave')
        // 动画清空
       this.$refs.cdWrapper.style.transition = ''
       this.$refs.cdWrapper.style.transform = ''
     },
     ...mapMutations({
-      setFullScreen: 'SET_FULL_SCREEN'
+      setFullScreen: 'SET_FULL_SCREEN',
+      setPlayingState: 'SET_PLAYING_STATE'
     }),
     // 获取mini播放器中的唱片位置
     getPosotionAndScale() {
@@ -171,6 +188,21 @@ export default {
         y,
         scale
       }
+    }
+  },
+  watch: {
+    // 当currentSong发生变化时 播放音乐 调用audio的API play即可实现播放功能
+    currentSong() {
+      // nextTick 防止audio不存在 导致报错
+      this.$nextTick(() => {
+        this.$refs.audio.play()
+      })
+    },
+    // 切换播放暂停状态
+    playing(newPlaying) {
+      this.$nextTick(() => {
+        newPlaying ? this.$refs.audio.play() : this.$refs.audio.pause()
+      })
     }
   }
 }
@@ -259,8 +291,11 @@ export default {
                 box-sizing: border-box
                 border-radius: 50%
                 border: 10px solid rgba(255, 255, 255, 0.1)
-              .play
-                animation: rotate 20s linear infinite
+                &.play
+                  animation: rotate 20s linear infinite
+                &.paused
+                  animation-play-state: paused
+                  -webkit-animation-play-state: paused
           .playing-lyric-wrapper
             width: 80%
             margin: 30px auto 0 auto
@@ -387,9 +422,10 @@ export default {
           width: 100%
           img
             border-radius: 50%
+            // 唱片旋转效果
             &.play
               animation: rotate 10s linear infinite
-            &.pause
+            &.paused
               animation-play-state: paused
       .text
         display: flex

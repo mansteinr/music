@@ -153,7 +153,6 @@ export default {
       // 通过上限和下限对比 来判断落在哪个区间
       const lisHeight = this.lisHeight
       // console.log(newY, newY > 0)
-      // debugger
       // 当滚动到顶部，newY>0
       if (newY > 0) {
         this.currentIndex = 0
