@@ -32,14 +32,14 @@
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div class="icon i-left" :class="disableCls">
+              <i @click="prev" class="icon-prev"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <i @click="togglePlaying" :class="playIcon"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="disableCls">
+              <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
               <i class="icon icon-not-favorite"></i>
@@ -68,7 +68,21 @@
       </div>
     </transition>
     <!-- 播放音乐 -->
-    <audio ref="audio" :src="currentSong.url"></audio>
+    <!-- 当浏览器能够开始播放指定的音频/视频时，发生 canplay 事件。 -->
+    <!-- 当音频/视频处于加载过程中时，会依次发生以下事件：
+      loadstart 当浏览器已加载音频/视频的当前帧时
+      durationchange 当音频/视频的时长已更改时
+      loadedmetadata 当浏览器已加载音频/视频的元数据时
+      loadeddata 当浏览器已加载音频/视频的当前帧时
+      progress 	当浏览器正在下载音频/视频时
+      canplay 当浏览器可以播放音频/视频时
+      canplaythrough 当浏览器可在不因缓冲而停顿的情况下进行播放时
+     -->
+    <audio 
+      ref="audio"
+      @canplay="ready"
+      @error="error"
+      :src="currentSong.url"></audio>
   </div>
 </template>
 
@@ -81,7 +95,14 @@ import animations from 'create-keyframe-animation'
 
 export default {
   data() {
-    return {}
+    return {
+      /**
+       * 当快速切换歌曲时，可能因为歌曲没有加载完成而导致报错
+       * 但是audio数据加载完成之后会派发canplay函数
+       * 可以利用这个函数 控制 当歌曲数据未加载完成时 禁止播放
+       */
+      songReady: false 
+    }
   },
   computed: {
     playIcon() {
@@ -93,14 +114,65 @@ export default {
     cdCls() {
       return this.playing ? 'play' : 'paused'
     },
+    disableCls() {
+      return this.songReady ? '' : 'disable'
+    },
     ...mapGetters([
       'fullScreen',
       'playList',
       'currentSong',
-      'playing'
+      'playing',
+      'currentIndex'
     ])
   },
   methods: {
+    ready() {
+      this.songReady = true
+    },
+    // 防止网络出错
+    error() {
+      this.songReady = true
+    },
+    /**
+     * 上一首
+     */
+    prev() {
+      // 歌曲数据未加载完成
+      if(!this.songReady) return
+      let index = this.currentIndex - 1
+      // 判断是否是第一首歌 如果是 则置为最后一首歌  因为这是顺序循环播放
+      if (index === -1 ) {
+        index = this.playList.length -1
+      }
+      // 修改mutation中的currentIndex
+      this.setCurrentIndex(index)
+      // 切换的时候 如果是暂停的 将icon图标改变
+      if(!this.playing) {
+        this.togglePlaying()
+      }
+      // 完成之后置为false
+      this.songReady = false
+    },
+    /**
+     * 下一首
+     */
+    next() {
+      // 歌曲数据未加载完成
+      if(!this.songReady) return
+      let index  = this.currentIndex + 1
+      // 判断是否是最后一首歌 如果是 则置为0  因为这是顺序循环播放
+      if (index === this.playList.length ) {
+        index = 0
+      }
+      // 修改mutation中的currentIndex
+      this.setCurrentIndex(index)
+       // 切换的时候 如果是暂停的 将icon图标改变
+      if(!this.playing) {
+        this.togglePlaying()
+      }
+      // 完成之后置为false
+      this.songReady = false
+    },
     // 切换暂停播放状态
     togglePlaying() {
       // 虽然改变了playing的状态 但是没暂停  这个在watch中完成的
@@ -163,7 +235,8 @@ export default {
     },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
-      setPlayingState: 'SET_PLAYING_STATE'
+      setPlayingState: 'SET_PLAYING_STATE',
+      setCurrentIndex: 'SET_CURRENT_INDEX'
     }),
     // 获取mini播放器中的唱片位置
     getPosotionAndScale() {
