@@ -28,6 +28,11 @@
           </div>
         </div>
         <div class="bottom">
+          <div class="progress-wrapper">
+            <span class="time time-l">{{ currentTime }}</span>
+            <div class="progress-bar-wrapper"></div>
+            <span class="time time-r">{{ currentDuration }}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
@@ -82,6 +87,7 @@
       ref="audio"
       @canplay="ready"
       @error="error"
+      @timeupdate="updateTime"
       :src="currentSong.url"></audio>
   </div>
 </template>
@@ -90,6 +96,7 @@
 /**
  * 利用js创建css动画，利用第三方库 create-keyframe-animation
  */
+import { format } from '@/common/js/utils'
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
 
@@ -101,7 +108,10 @@ export default {
        * 但是audio数据加载完成之后会派发canplay函数
        * 可以利用这个函数 控制 当歌曲数据未加载完成时 禁止播放
        */
-      songReady: false 
+      songReady: false,
+      // 歌曲当前播放的时间
+      currentTime: 0,
+      currentDuration: 0
     }
   },
   computed: {
@@ -126,6 +136,11 @@ export default {
     ])
   },
   methods: {
+    updateTime(e) {
+      // 当前歌曲播放的时间
+      this.currentTime = format(e.target.currentTime)
+      this.currentDuration = format(this.currentSong.duration)
+    },
     ready() {
       this.songReady = true
     },
