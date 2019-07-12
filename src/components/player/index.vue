@@ -1,6 +1,12 @@
 <template>
   <div class="player" v-show="playList.length>0">
-    <transition name="normal">
+    <!-- vue 提供的钩子函数，可以在这里实现动画效果 -->
+    <transition name="normal"
+      @enter="enter"
+      @after-enter="afterEnter"
+      @leave="leave"
+      @after-leave="afterLeave"
+    >
       <div class="normal-player" v-show="fullScreen">
         <div class="background">
           <img height="100%" width="100%" :src="currentSong.image">
@@ -14,7 +20,7 @@
         </div>
         <div class="middle">
           <div class="middle-l">
-            <div class="cd-wrapper">
+            <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd">
                 <img class="image" :src="currentSong.image">
               </div>
@@ -62,7 +68,12 @@
 </template>
 
 <script>
+/**
+ * 利用js创建css动画，利用第三方库 create-keyframe-animation
+ */
 import { mapGetters, mapMutations } from 'vuex'
+import animations from 'create-keyframe-animation'
+
 export default {
   data() {
     return {}
@@ -81,9 +92,86 @@ export default {
     open() {
       this.setFullScreen(true)
     },
+    // el表示动画左右的dom, done为回掉函数
+    // done执行后会自动调到下个函数after-enter函数中
+    enter(el, done) {
+      console.log('enter')
+      // mini播放器移动到大播放器的唱片位置
+      const  {x, y, scale } = this.getPosotionAndScale()
+      // 定义动画
+      let animation = {
+        0: {
+          transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
+        },
+        60: {
+          transform: `translate3d(0, 0, 0) scale(1.1)`
+        },
+        100: {
+          transform: `translate3d(0, 0, 0) scale(1)`
+        }
+      }
+      // 注册
+      animations.registerAnimation({
+        name: 'move',
+        animation,
+        presets: {
+          duration: 400,
+          easing: 'linear'
+        }
+      })
+
+      animations.runAnimation(this.$refs.cdWrapper, 'move', done)
+    },
+    afterEnter() {
+      console.log('afterEnter')
+      // 注销
+      animations.unregisterAnimation('move')
+      // 动画清空
+      this.$refs.cdWrapper.style.animation = ''
+    },
+    leave(el, done) {
+      console.log('leave')
+      // 离开的时候使用原生的 没有用到create-keyframe-animation插件
+      this.$refs.cdWrapper.style.transition = 'all .4s'
+      // 获取位置
+      const  {x, y, scale } = this.getPosotionAndScale()
+      this.$refs.cdWrapper.style.transform = `translate3d(${x}px,${y}px,0) scale(${scale})`
+      // transitionend 事件在 CSS 完成过渡后触发。 原生提供的API
+      this.$refs.cdWrapper.addEventListener('transitionend', done)
+    },
+    afterLeave() {
+      console.log('afterLeave')
+       // 动画清空
+      this.$refs.cdWrapper.style.transition = ''
+      this.$refs.cdWrapper.style.transform = ''
+    },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN'
-    })
+    }),
+    // 获取mini播放器中的唱片位置
+    getPosotionAndScale() {
+      // mini播放器中的唱片的宽度 这是css中定义的
+      const targetWidth = 40
+      // mini播放器中的唱片的中心位置 距离左边的距离
+      const paddingLeft = 40
+      // mini播放器中的唱片的中心位置 距离底部的距离
+      const paddingBottom = 30
+      // 大唱片容器到顶部的距离 即class="middle"到顶部的距离 css定义的
+      const paddingTop = 80
+      // 大唱片容器的宽度 即class="cd-wrapper" css定义的
+      const width = window.innerWidth * 0.8
+      // 初始的缩放比列
+      const scale = targetWidth / width
+      // 初始的x坐标 即小唱片的中心到大唱片中心的距离
+      const x = -(window.innerWidth / 2 - paddingLeft)
+      // 初始的y坐标 即小唱片的中心到大唱片中心的距离
+      const y = window.innerHeight - paddingTop - width / 2  - paddingBottom
+      return {
+        x,
+        y,
+        scale
+      }
+    }
   }
 }
 </script>
