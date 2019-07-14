@@ -92,6 +92,7 @@
       @canplay="ready"
       @error="error"
       @timeupdate="updateTime"
+      @ended="end"
       :src="currentSong.url"></audio>
   </div>
 </template>
@@ -155,6 +156,22 @@ export default {
     ])
   },
   methods: {
+    // 歌曲播放完成时
+    end() {
+      // 单曲循环模式
+      if(this.mode === play.loop) {
+        this.loop()
+      } else {
+        // 切换至下一首
+        this.next()
+      }
+    },
+    loop() { // 单曲循环模式
+      this.$refs.audio.currentTime = 0
+      // 重新调用pLay方法
+      this.$refs.audio.play()
+    },
+    // 切换模式
     changeMode() {
       const mode = (this.mode + 1) % 3
       this.setPlayMode(mode)
@@ -173,7 +190,7 @@ export default {
     resetCurrentIdnex(list) {
       // 当播放模式
       let index = list.findIndex(v => {
-        return v.id === this.currenSong.id
+        return v.id === this.currentSong.id
       })
       this.setCurrentIndex(index)
     },

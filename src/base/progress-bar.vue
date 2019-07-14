@@ -67,7 +67,11 @@ export default {
     },
     // 当点击进度条时，设置歌曲进度和进度条
     progressClick(e) {
-      this.offset(e.offsetX)
+      // 点击的时 e.offsetX获取不对
+      // this.offset(e.offsetX)
+      const rect = this.$refs.progressBar.getBoundingClientRect()
+      const offsetWidth = e.pageX - rect.left
+      this.offset(offsetWidth)
       // 重新触发
       this.triggerPercent()
     }

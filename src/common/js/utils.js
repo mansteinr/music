@@ -20,15 +20,30 @@ function getRandomIndex (min, max) {
   return Math.floor(Math.random() * (max -min + 1) + min)
 }
 
+// export function shuffle (arr) {
+//   if (!arr.length) return
+//   let _arr = arr.splice() // 复制一份 防止对原数组造成影响
+//   _arr.forEach((v, k) => {
+//     // 获取一个随机的索引 将当前的的和随机的索引之间对换 打乱顺序
+//     // 既可以得到随机数组
+//     let j = getRandomIndex(0, k) 
+//     let t = v
+//     _arr[j] = t
+//   })
+//   return _arr
+// }
+
 export function shuffle (arr) {
-  if (!arr.length) return
-  arr.forEach((v, k) => {
-    // 获取一个随机的索引 将当前的的和随机的索引之间对换 打乱顺序
-    // 既可以得到随机数组
-    let j = getRandomIndex(0, k) 
-    let t = v
-    arr[j] = t
-  })
-  return arr
+   // 复制一份 防止对原数组造成影响
+  let _arr = arr.slice()
+  for (let i = 0; i < _arr.length; i++) {
+    //     // 获取一个随机的索引 将当前的的和随机的索引之间对换 打乱顺序
+//     // 既可以得到随机数组
+    let j = getRandomIndex(0, i)
+    let t = _arr[i]
+    _arr[i] = _arr[j]
+    _arr[j] = t
+  }
+  return _arr
 }
 
