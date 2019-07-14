@@ -36,8 +36,8 @@
             <span class="time time-r">{{ currentDuration }}</span>
           </div>
           <div class="operators">
-            <div class="icon i-left">
-              <i class="icon-sequence"></i>
+            <div class="icon i-left" @click="changeMode">
+              <i :class="iconMode"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
               <i @click="prev" class="icon-prev"></i>
@@ -105,6 +105,8 @@ import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
 import ProgressBar from '@/base/progress-bar'
 import ProgressCircle from '@/base/progress-circle'
+import { playMode } from '@/api/config'
+import { shuffle } from '@/common/js/utils'
 
 export default {
   data() {
@@ -138,15 +140,43 @@ export default {
       // 当前的时间除以歌曲总时间 来计算当前比例
       return this.currentTime / this.currentSong.duration
     },
+    iconMode() {
+      // 播放模式的图标
+      return this.mode === playMode.sequence ? 'icon-sequence' : (this.mode === playMode.loop ? 'icon-loop' : 'icon-random')
+    },
     ...mapGetters([
       'fullScreen',
       'playList',
       'currentSong',
       'playing',
-      'currentIndex'
+      'currentIndex',
+      'mode',
+      'sequenceList'
     ])
   },
   methods: {
+    changeMode() {
+      const mode = (this.mode + 1) % 3
+      this.setPlayMode(mode)
+      let list = null
+      if(mode === playMode.random) {
+        list = shuffle(this.sequenceList)
+      } else {
+        list = this.sequenceList
+      }
+      this.resetCurrentIdnex(list)
+      this.setPlayList(list)
+    },
+    // 切换模式的时候 不希望currentIdnex发生改变
+    // 当currentIdnex 发生改变时 需要重置currentIdnex
+    // 保证切换时歌曲不会发生改变
+    resetCurrentIdnex(list) {
+      // 当播放模式
+      let index = list.findIndex(v => {
+        return v.id === this.currenSong.id
+      })
+      this.setCurrentIndex(index)
+    },
     percentChange(percent) {
       // 当拖动进度条时 将歌曲进度设置未相应的百分比
       this.$refs.audio.currentTime = this.currentSong.duration * percent
@@ -270,7 +300,9 @@ export default {
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX'
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayMode: 'SET_PLAY_MODE',
+      setPlayList: 'SET_PLAYLIST'
     }),
     // 获取mini播放器中的唱片位置
     getPosotionAndScale() {
@@ -299,7 +331,9 @@ export default {
   },
   watch: {
     // 当currentSong发生变化时 播放音乐 调用audio的API play即可实现播放功能
-    currentSong() {
+    currentSong(newSong, oldSong) {
+      // 当切换播放模式时 防止在暂停状态下切换触发播放
+      if(newSong.id === oldSong.id) return
       // nextTick 防止audio不存在 导致报错
       this.$nextTick(() => {
         this.$refs.audio.play()
