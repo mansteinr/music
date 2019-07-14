@@ -31,7 +31,7 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{ formatCurrentTime }}</span>
             <div class="progress-bar-wrapper">
-              <progress-bar :percent="percent"></progress-bar>
+              <progress-bar :percent="percent" @percentChange="percentChange"></progress-bar>
             </div>
             <span class="time time-r">{{ currentDuration }}</span>
           </div>
@@ -144,6 +144,13 @@ export default {
     ])
   },
   methods: {
+    percentChange(percent) {
+      // 当拖动进度条时 将歌曲进度设置未相应的百分比
+      this.$refs.audio.currentTime = this.currentSong.duration * percent
+      if(!this.playing) { // 拖动之后发现没有播放 则手动设置播放
+        this.togglePlaying()
+      }
+    },
     updateTime(e) {
       // 当前歌曲播放的时间
       this.currentTime =e.target.currentTime
