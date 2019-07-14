@@ -59,6 +59,7 @@ configureWebpack: {
       })
 
       app.get('/api/lyric', function (req, res) {
+
         const url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
 
         axios.get(url, {
@@ -70,6 +71,7 @@ configureWebpack: {
         }).then((response) => {
           let ret = response.data
           if (typeof ret === 'string') {
+            // 回掉函数 截取{.+}里面的东西
             const reg = /^\w+\(({.+})\)$/
             const matches = ret.match(reg)
             if (matches) {

@@ -108,6 +108,7 @@ import ProgressBar from '@/base/progress-bar'
 import ProgressCircle from '@/base/progress-circle'
 import { playMode } from '@/api/config'
 import { shuffle } from '@/common/js/utils'
+import Lyric from 'lyric-parser'
 
 export default {
   data() {
@@ -121,7 +122,8 @@ export default {
       // 歌曲当前播放的时间
       formatCurrentTime: 0,
       currentTime: 0,
-      currentDuration: 0
+      currentDuration: 0,
+      currentLyric: null
     }
   },
   computed: {
@@ -193,6 +195,12 @@ export default {
         return v.id === this.currentSong.id
       })
       this.setCurrentIndex(index)
+    },
+    getLyric() {
+      this.currentSong.getLyric().then(res => {
+        this.currentLyric = new Lyric(res)
+        console.log(this.currentLyric)
+      })
     },
     percentChange(percent) {
       // 当拖动进度条时 将歌曲进度设置未相应的百分比
@@ -354,6 +362,9 @@ export default {
       // nextTick 防止audio不存在 导致报错
       this.$nextTick(() => {
         this.$refs.audio.play()
+        // currentSong是通过在列表中计算得到的 也属于class Song
+        console.log(this.currentSong)
+        this.getLyric()
       })
     },
     // 切换播放暂停状态

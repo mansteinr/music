@@ -2,12 +2,13 @@ import { ERR_Ok } from './config'
 import { getUid } from '@/common/js/uid'
 import { commonParams } from './config'
 import { axios } from '@/common/js/axios'
-// import axios from 'axios'
 
 const debug = process.env.NODE_ENV !== 'production'
 
 export function getLyric (mid) {
+  // 获取歌词
   const url = debug ? '/api/lyric' : 'http://ustbhuangyi.com/music/api/lyric'
+  
 
   const data = Object.assign({}, commonParams, {
     songmid: mid,

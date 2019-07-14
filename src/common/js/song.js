@@ -1,7 +1,8 @@
 
-import { Base64 } from 'js-base64'
+import { Base64 } from 'js-base64' // base64解码
 import { ERR_Ok } from '@/api/config'
-import { getLyric, getSongsUrl } from '@/api/song'
+// 导入函数
+import { getSongsUrl, getLyric } from '@/api/song'
 
 export default class Song {
   constructor ({ id, mid, singer, name, album, duration, image, url }) {
@@ -16,7 +17,9 @@ export default class Song {
     this.url = url
   }
 
+  // 获取歌词 可以把歌词看作是歌曲的属性 扩展类的方法
   getLyric () {
+    // 如果已存在 直接返回
     if (this.lyric) {
       return Promise.resolve(this.lyric)
     }
@@ -24,6 +27,7 @@ export default class Song {
     return new Promise((resolve, reject) => {
       getLyric(this.mid).then((res) => {
         if (res.retcode === ERR_Ok) {
+          // 解码
           this.lyric = Base64.decode(res.lyric)
           resolve(this.lyric)
         } else {
