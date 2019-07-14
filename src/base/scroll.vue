@@ -6,7 +6,7 @@
 
 <script>
   import BScroll from 'better-scroll'
-import { setTimeout } from 'timers';
+  import { setTimeout } from 'timers';
 
   export default {
     props: {

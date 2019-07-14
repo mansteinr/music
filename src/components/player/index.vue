@@ -29,8 +29,10 @@
         </div>
         <div class="bottom">
           <div class="progress-wrapper">
-            <span class="time time-l">{{ currentTime }}</span>
-            <div class="progress-bar-wrapper"></div>
+            <span class="time time-l">{{ formatCurrentTime }}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar :percent="percent"></progress-bar>
+            </div>
             <span class="time time-r">{{ currentDuration }}</span>
           </div>
           <div class="operators">
@@ -99,6 +101,7 @@
 import { format } from '@/common/js/utils'
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
+import ProgressBar from '@/base/progress-bar'
 
 export default {
   data() {
@@ -110,6 +113,7 @@ export default {
        */
       songReady: false,
       // 歌曲当前播放的时间
+      formatCurrentTime: 0,
       currentTime: 0,
       currentDuration: 0
     }
@@ -127,6 +131,10 @@ export default {
     disableCls() {
       return this.songReady ? '' : 'disable'
     },
+    percent() {
+      // 当前的时间除以歌曲总时间 来计算当前比例
+      return this.currentTime / this.currentSong.duration
+    },
     ...mapGetters([
       'fullScreen',
       'playList',
@@ -138,7 +146,8 @@ export default {
   methods: {
     updateTime(e) {
       // 当前歌曲播放的时间
-      this.currentTime = format(e.target.currentTime)
+      this.currentTime =e.target.currentTime
+      this.formatCurrentTime = format(e.target.currentTime)
       this.currentDuration = format(this.currentSong.duration)
     },
     ready() {
@@ -292,6 +301,9 @@ export default {
         newPlaying ? this.$refs.audio.play() : this.$refs.audio.pause()
       })
     }
+  },
+  components:{
+    ProgressBar
   }
 }
 </script>
@@ -380,7 +392,7 @@ export default {
                 border-radius: 50%
                 border: 10px solid rgba(255, 255, 255, 0.1)
                 &.play
-                  animation: rotate 20s linear infinite
+                  animation: rotate 20s linear infinite forwards
                 &.paused
                   animation-play-state: paused
                   -webkit-animation-play-state: paused
@@ -512,7 +524,7 @@ export default {
             border-radius: 50%
             // 唱片旋转效果
             &.play
-              animation: rotate 10s linear infinite
+              animation: rotate 10s linear infinite forwards
             &.paused
               animation-play-state: paused
       .text
