@@ -59,7 +59,7 @@
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
           <div class="imgWrapper">
-            <img height="40" width="40"  :class="cdCls" :src="currentSong.image">
+            <img height="40" width="40" :class="cdCls" :src="currentSong.image">
           </div>
         </div>
         <div class="text">
@@ -67,7 +67,9 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <i :class="miniIcon" @click.stop="togglePlaying"></i>
+          <progress-circle :percent="percent">
+            <i :class="miniIcon" class="icon-mini" @click.stop="togglePlaying"></i>
+          </progress-circle>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -102,6 +104,7 @@ import { format } from '@/common/js/utils'
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
 import ProgressBar from '@/base/progress-bar'
+import ProgressCircle from '@/base/progress-circle'
 
 export default {
   data() {
@@ -310,7 +313,8 @@ export default {
     }
   },
   components:{
-    ProgressBar
+    ProgressBar,
+    ProgressCircle
   }
 }
 </script>
