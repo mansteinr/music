@@ -1,5 +1,5 @@
 <template>
-  <div class="progress-bar" ref="progressBar">
+  <div class="progress-bar" ref="progressBar" @click="progressClick">
     <div class="bar-inner">
       <div class="progress" ref="progress"></div>
       <div class="progress-btn-wrapper" ref="progressBtn"
@@ -64,6 +64,12 @@ export default {
       const barWidth = this.$refs.progressBar.clientWidth - progressBtnWidth
       const percent = this.$refs.progress.clientWidth / barWidth
       this.$emit('percentChange', percent)
+    },
+    // 当点击进度条时，设置歌曲进度和进度条
+    progressClick(e) {
+      this.offset(e.offsetX)
+      // 重新触发
+      this.triggerPercent()
     }
   },
   watch: {
