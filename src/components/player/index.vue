@@ -18,7 +18,11 @@
           <h1 class="title" v-html="currentSong.name"></h1>
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
-        <div class="middle">
+        <div class="middle"
+          @touchstart="middleTouchStart"
+          @touchmove="middleTouchMove"
+          @touchend="middleTouchEnd"
+        >
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd">
@@ -39,6 +43,10 @@
           </scroll>
         </div>
         <div class="bottom">
+          <div class="dot-wrapper">
+            <span class="dot" :class="{'active': currentShow === 'cd'}"></span>
+            <span class="dot" :class="{'active': currentShow === 'lyric'}"></span>
+          </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{ formatCurrentTime }}</span>
             <div class="progress-bar-wrapper">
@@ -134,6 +142,7 @@ export default {
       // 歌曲当前播放的时间
       formatCurrentTime: 0,
       currentTime: 0,
+      currentShow: 'cd',
       currentDuration: 0,
       currentLyric: null,
       currentLineNum: 0 // 当前歌词所在行
@@ -171,6 +180,29 @@ export default {
     ])
   },
   methods: {
+    middleTouchStart(e) {
+      this.touch.initiated = true
+      const touch = e.touches[0]
+      this.touch.startX = touch.pageX
+      this.touch.startY = touch.pageY
+    },
+    middleTouchMove(e) {
+      if(this.touch.initiated) return
+      const touch = e.touches[0]
+      const deltaX = touch.pageX - this.touch.startX
+      const deltaY = touch.pageY - this.touch.startY
+      // 如果y轴偏移量大于x轴 则不应该左右滑动
+      if(Math.abs(deltaY) > Math.abs(deltaX)) {
+        return
+      }
+      // 当滚动一半时自动滚动 反之回弹至原来
+      const left = this.currentShow === 'cd' ? '0' : -window.innerWidth
+      // 不能超过屏幕的宽度 右滑正向
+      const width = Math.max(0, Math.min(-window.innerWidth, left + deltaX))
+      // this.$refs.lyricList.$el 因为lyricList是个组件 要用$el取dom
+      this.$refs.lyricList.$el.style.transform = `translate3d(${width}px, 0, 0)`
+    },
+    middleTouchEnd(e) {},
     // 歌曲播放完成时
     end() {
       // 单曲循环模式
@@ -382,6 +414,9 @@ export default {
         scale
       }
     }
+  },
+  created() {
+    this.touch = {}
   },
   watch: {
     // 当currentSong发生变化时 播放音乐 调用audio的API play即可实现播放功能
