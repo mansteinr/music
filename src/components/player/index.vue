@@ -29,6 +29,10 @@
                 <img class="image" :class="cdCls" :src="currentSong.image">
               </div>
             </div>
+            <!-- 用来显示当前歌词的 -->
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{ playingLyric }}</div>
+            </div>
           </div>
           <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
             <div class="lyric-wrapper">
@@ -129,6 +133,7 @@ import { playMode } from '@/api/config'
 import { shuffle } from '@/common/js/utils'
 import Lyric from 'lyric-parser'
 import Scroll from '@/base/scroll'
+import { setTimeout } from 'timers';
 
 export default {
   data() {
@@ -145,6 +150,7 @@ export default {
       currentShow: 'cd',
       currentDuration: 0,
       currentLyric: null,
+      playingLyric: '', // 当前歌词
       currentLineNum: 0 // 当前歌词所在行
     }
   },
@@ -251,6 +257,10 @@ export default {
       this.$refs.audio.currentTime = 0
       // 重新调用pLay方法
       this.$refs.audio.play()
+      if(this.currentLyric) {
+        // 当循环播放重新开始时，将歌词重新设置到最开始
+        this.currentLyric.seek(0)
+      }
     },
     // 切换模式
     changeMode() {
@@ -281,6 +291,10 @@ export default {
         if(this.playing) {
           this.currentLyric.play()
         }
+      }).catch(() => {
+        this.currentLyric = null
+        this.playingLyric = ''
+        this.currentLineNum = 0
       })
     },
     // 当歌词每一行改变时 就会触发这个回调函数
@@ -296,12 +310,18 @@ export default {
         // 滚动到底部
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
+      this.playingLyric = txt
     },
     percentChange(percent) {
       // 当拖动进度条时 将歌曲进度设置未相应的百分比
-      this.$refs.audio.currentTime = this.currentSong.duration * percent
+      const currentTime = this.currentSong.duration * percent
+      this.$refs.audio.currentTime = currentTime
       if(!this.playing) { // 拖动之后发现没有播放 则手动设置播放
         this.togglePlaying()
+      }
+      if(this.currentLyric) {
+        // 当拖动bar时 将歌词调整到相应的歌词
+        this.currentLyric.seek(currentTime * 1000)
       }
     },
     updateTime(e) {
@@ -323,6 +343,11 @@ export default {
     prev() {
       // 歌曲数据未加载完成
       if(!this.songReady) return
+      if(this.playList.length === 1) {
+        // 处理只有一首歌曲时
+        this.loop()
+        return
+      }
       let index = this.currentIndex - 1
       // 判断是否是第一首歌 如果是 则置为最后一首歌  因为这是顺序循环播放
       if (index === -1 ) {
@@ -343,6 +368,11 @@ export default {
     next() {
       // 歌曲数据未加载完成
       if(!this.songReady) return
+      if(this.playList.length === 1) {
+        // 处理只有一首歌曲时
+        this.loop()
+        return
+      }
       let index  = this.currentIndex + 1
       // 判断是否是最后一首歌 如果是 则置为0  因为这是顺序循环播放
       if (index === this.playList.length ) {
@@ -359,8 +389,13 @@ export default {
     },
     // 切换暂停播放状态
     togglePlaying() {
+      if(!this.songReady) return
       // 虽然改变了playing的状态 但是没暂停  这个在watch中完成的
       this.setPlayingState(!this.playing)
+      if(this.currentLyric) {
+        // 切换时 如果歌词存在时 重新播放 防止暂停时 歌词还在滚动
+        this.currentLyric.togglePlay()
+      }
     },
     back() {
       this.setFullScreen(false)
@@ -457,12 +492,21 @@ export default {
     currentSong(newSong, oldSong) {
       // 当切换播放模式时 防止在暂停状态下切换触发播放
       if(newSong.id === oldSong.id) return
+      // 歌词存在时 要清除上一次的歌词 防止切换时 歌词来回跳动
+      if(this.currentLyric) {
+        this.currentLyric.stop()
+      }
       // nextTick 防止audio不存在 导致报错
-      this.$nextTick(() => {
+      /**
+       * 当在微信里面播放时，微信切换至后台时，不会执行js的，但是audio是可以把这首歌播放完的
+       * 如果播放完了 就会触发end 但是end函数不会被执行 当我们再次打开时 songReady不会设置为
+       * true,这样就切换不了
+       */
+      setTimeout(() => {
         this.$refs.audio.play()
         // currentSong是通过在列表中计算得到的 也属于class Song
         this.getLyric()
-      })
+      }, 1000)
     },
     // 切换播放暂停状态
     playing(newPlaying) {
