@@ -26,6 +26,17 @@
               </div>
             </div>
           </div>
+          <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <p ref="lyricLine" 
+                  class="text" 
+                  v-for="(v, k) in currentLyric.lines" 
+                  :class="{'current' : currentLineNum === k}"
+                  :key="k">{{ v.txt }}</p>
+              </div>
+            </div>
+          </scroll>
         </div>
         <div class="bottom">
           <div class="progress-wrapper">
@@ -109,6 +120,7 @@ import ProgressCircle from '@/base/progress-circle'
 import { playMode } from '@/api/config'
 import { shuffle } from '@/common/js/utils'
 import Lyric from 'lyric-parser'
+import Scroll from '@/base/scroll'
 
 export default {
   data() {
@@ -123,7 +135,8 @@ export default {
       formatCurrentTime: 0,
       currentTime: 0,
       currentDuration: 0,
-      currentLyric: null
+      currentLyric: null,
+      currentLineNum: 0 // 当前歌词所在行
     }
   },
   computed: {
@@ -198,9 +211,25 @@ export default {
     },
     getLyric() {
       this.currentSong.getLyric().then(res => {
-        this.currentLyric = new Lyric(res)
-        console.log(this.currentLyric)
+        this.currentLyric = new Lyric(res, this.handleLyric)
+        if(this.playing) {
+          this.currentLyric.play()
+        }
       })
+    },
+    // 当歌词每一行改变时 就会触发这个回调函数
+    handleLyric({lineNum, txt}) {
+      this.currentLineNum = lineNum
+      // 保持滚动在中间
+      if(lineNum > 5) {
+        // 当前元素减去5
+        let lineEl = this.$refs.lyricLine[lineNum - 5]
+        //1000表示过渡动画时间
+        this.$refs.lyricList.scrollToElement(lineEl, 1000)
+      } else {
+        // 滚动到底部
+        this.$refs.lyricList.scrollToElement(0, 1000)
+      }
     },
     percentChange(percent) {
       // 当拖动进度条时 将歌曲进度设置未相应的百分比
@@ -363,7 +392,6 @@ export default {
       this.$nextTick(() => {
         this.$refs.audio.play()
         // currentSong是通过在列表中计算得到的 也属于class Song
-        console.log(this.currentSong)
         this.getLyric()
       })
     },
@@ -375,6 +403,7 @@ export default {
     }
   },
   components:{
+    Scroll,
     ProgressBar,
     ProgressCircle
   }

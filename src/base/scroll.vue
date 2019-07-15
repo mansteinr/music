@@ -19,7 +19,7 @@
         type: Boolean,
         default: true
       },
-      data: {
+      data: { // b必传 当数据填充时 可以重新渲染
         type: Array,
         default: () => []
       },

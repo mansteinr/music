@@ -27,3 +27,5 @@ yarn run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### [lyric-parser歌词]https://github.com/ustbhuangyi/lyric-parser/blob/master/src/index.js
