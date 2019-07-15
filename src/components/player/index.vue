@@ -23,7 +23,7 @@
           @touchmove="middleTouchMove"
           @touchend="middleTouchEnd"
         >
-          <div class="middle-l">
+          <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd">
                 <img class="image" :class="cdCls" :src="currentSong.image">
@@ -187,7 +187,7 @@ export default {
       this.touch.startY = touch.pageY
     },
     middleTouchMove(e) {
-      if(this.touch.initiated) return
+      if(!this.touch.initiated) return
       const touch = e.touches[0]
       const deltaX = touch.pageX - this.touch.startX
       const deltaY = touch.pageY - this.touch.startY
@@ -196,13 +196,47 @@ export default {
         return
       }
       // 当滚动一半时自动滚动 反之回弹至原来
-      const left = this.currentShow === 'cd' ? '0' : -window.innerWidth
+      const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
       // 不能超过屏幕的宽度 右滑正向
-      const width = Math.max(0, Math.min(-window.innerWidth, left + deltaX))
+      const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
+      // 滑动的距离除以整个屏幕的宽度 得到百分比
+      this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
       // this.$refs.lyricList.$el 因为lyricList是个组件 要用$el取dom
-      this.$refs.lyricList.$el.style.transform = `translate3d(${width}px, 0, 0)`
+      this.$refs.lyricList.$el.style.transform = `translate3d(${offsetWidth}px, 0, 0)`
+      this.$refs.lyricList.$el.style.transitionDuration = 0
+      this.$refs.middleL.style.opacity = 1 - this.touch.percent
+      this.$refs.middleL.style.transitionDuration = 0
     },
-    middleTouchEnd(e) {},
+    middleTouchEnd(e) {
+      if(this.touch.percent < 0.29) return
+      let offsetWidth, opacity
+      // 左边滑动还是右边滑动
+      // 这个时候要处理两种情况 要么滚回去 要么滚下去
+      if(this.currentShow === 'cd') { // 从右往左边滑动 只要滑动10% 就可以滑倒左边 反之返回右边
+        if(this.touch.percent > 0.3) {
+          offsetWidth = -window.innerWidth
+          this.currentShow = 'lyric'
+          opacity = 0
+        } else {
+          offsetWidth = 0
+          opacity = 1
+        }
+      } else {
+        if(this.touch.percent < 0.7) {
+          opacity = 1
+          offsetWidth = 0
+          this.currentShow = 'cd'
+        } else {
+          opacity = 0
+          offsetWidth = -window.innerWidth
+        }
+      }
+      // 设置位置
+      this.$refs.lyricList.$el.style.transform = `translate3d(${offsetWidth}px, 0, 0)`
+      this.$refs.lyricList.$el.style.transitionDuration = '300ms'
+      this.$refs.middleL.style.opacity = opacity
+      this.$refs.middleL.style.transitionDuration = '300ms'
+    },
     // 歌曲播放完成时
     end() {
       // 单曲循环模式
@@ -260,7 +294,7 @@ export default {
         this.$refs.lyricList.scrollToElement(lineEl, 1000)
       } else {
         // 滚动到底部
-        this.$refs.lyricList.scrollToElement(0, 1000)
+        this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
     },
     percentChange(percent) {
