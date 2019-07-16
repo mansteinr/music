@@ -501,6 +501,7 @@ export default {
        * 当在微信里面播放时，微信切换至后台时，不会执行js的，但是audio是可以把这首歌播放完的
        * 如果播放完了 就会触发end 但是end函数不会被执行 当我们再次打开时 songReady不会设置为
        * true,这样就切换不了
+       * 这样的的 用setTomeout而不用nextTick
        */
       setTimeout(() => {
         this.$refs.audio.play()

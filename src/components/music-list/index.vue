@@ -32,10 +32,13 @@ import Scroll from '@/base/scroll'
 import SongList from '@/base/song-list'
 // 获取actions里面的是函数
 import { mapActions } from 'vuex'
+import { playlistMixin } from '@/common/js/mixin'
 
 // 不让layer滚到最上面 即最上面预留点位置
 const RESERVED_HEIGHT = 40 
 export default {
+  // 一个组件可以插入多个组件 一旦插入mixin 就将mixin中的代码定义在组件中了
+  mixins: [ playlistMixin ],
   data() {
     return {
       scrollY: 0
@@ -61,6 +64,13 @@ export default {
     }
   },
   methods: {
+    // 这个方法定义在mixin中 可以将mixin中的方法覆盖掉
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.list.$el.style.bottom = bottom
+      // 设置完成之后重新刷新一次
+      this.$refs.list.refresh()
+    },
     scroll(position) {
       // 拿到y轴滚动偏移量 就可以设置layer的偏移量
       this.scrollY = position.y

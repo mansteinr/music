@@ -90,8 +90,10 @@ export default {
     }
   },
   methods: {
+    refresh() {
+      this.$refs.ListView.refresh()
+    },
     selectItem(v) {
-      console.log(v)
       this.$emit('selectItem', v)
     },
     onShortcutTouchStart(e) {

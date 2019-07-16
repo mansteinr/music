@@ -1,6 +1,6 @@
 <template>
-  <div class="singer">
-    <list-view @selectItem="selectSinger" :data="singers"></list-view>
+  <div class="singer" ref="singer">
+    <list-view @selectItem="selectSinger" :data="singers" ref="list"></list-view>
     <router-view></router-view>
   </div>
 </template>
@@ -10,11 +10,13 @@ import ListView from '@/base/listview'
 import Singer from '@/common/js/singer'
 import { getSingerList } from '@/api/singer'
 import { mapMutations } from 'vuex'
+import { playlistMixin } from '@/common/js/mixin'
 
 const HOT_NAME = '热门'
 const HOT_SINGER_LEN = 10 //定义前10条为热门歌曲
 
 export default {
+  mixins: [ playlistMixin ],
   data () {
     return {
       singers: []
@@ -27,6 +29,13 @@ export default {
     ListView
   },
   methods: {
+        // 这个方法定义在mixin中 可以将mixin中的方法覆盖掉
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.singer.style.bottom = bottom
+      // 设置完成之后重新刷新一次
+      this.$refs.list.refresh()
+    },
     /**
      * 通过mpaMutations将SET_SINGER映射为setSinger
      */

@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" ref="recommend">
     <scroll class="recommend-content" :data="discList" ref="scroll">
       <div>
         <!-- 因为数据获取是异步过程 一开始就渲染数据为空 -->
@@ -34,10 +34,12 @@
 <script>
 import Slider from '@/base/slider'
 import Scroll from '@/base/scroll'
+import { playlistMixin } from '@/common/js/mixin'
 // import loading from '@/base/loading'
 import { getRecommend, getDiscList } from '@/api/recommend'
 
 export default {
+  mixins: [ playlistMixin ],
   data () {
     return {
       recommends: [],
@@ -49,6 +51,13 @@ export default {
     this._getDiscList()
   },
   methods: {
+    // 这个方法定义在mixin中 可以将mixin中的方法覆盖掉
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.recommend.style.bottom = bottom
+      // 设置完成之后重新刷新一次
+      this.$refs.scroll.refresh()
+    },
     _getRecommend() {
       getRecommend().then(res => {
         this.recommends = res.data.slider
