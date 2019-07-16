@@ -20,11 +20,6 @@ export function getLyric (mid) {
     format: 'json'
   })
   return axios(url, data, 'get')
-  // return axios.get(url, {
-  //   params: data
-  // }).then((res) => {
-  //   return Promise.resolve(res.data)
-  // })
 }
 
 export function getSongsUrl (songs) {

@@ -1,15 +1,22 @@
 <template>
   <transition name="slide">
     <!-- 驼峰命名的 要改成连字符 -->
-    <music-list :title="title" :bg-image="bgImage"></music-list>
+    <music-list :title="title" :bg-image="bgImage" :songs="songs"></music-list>
   </transition>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import MusicList from '@/components/music-list'
 import { getSongList } from '@/api/recommend'
+import MusicList from '@/components/music-list'
+import { createSong, isValidMusic, processSongsUrl } from '@/common/js/song'
+
 export default {
+  data() {
+    return {
+      songs: []
+    }
+  },
   computed: {
     title() {
       return this.disc.dissname
@@ -30,9 +37,23 @@ export default {
   },
   methods: {
     _getSongList() {
+      if(!this.disc.dissid) {
+        this.$router.go(-1)
+      }
       getSongList(this.disc.dissid).then(res => {
-        console.log(res.cdlist[0].songlist)
+        processSongsUrl(this.normallizeSong(res.cdlist[0].songlist)).then((songs) => {
+          this.songs = songs
+        })
       })
+    },
+    normallizeSong(list) {
+      let ret = []
+      list.forEach(v => {
+        if(v.songid && v.albumid) {
+          ret.push(createSong(v))
+        }
+      })
+      return ret
     }
   }
 }
