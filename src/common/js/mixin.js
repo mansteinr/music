@@ -10,19 +10,19 @@ import { mapGetters } from 'vuex'
 export const playlistMixin = {
   // 和组件中的mounted一样 dom渲染完成之后触发
   mounted () {
-    this.handlePlaylist(this.playlist)
+    this.handlePlaylist(this.playList)
   },
   // keep-alive切换时 会触发
   activated () {
-    this.handlePlaylist(this.playlist)
+    this.handlePlaylist(this.playList)
   },
   computed: {
     ...mapGetters([
-      'playlist'
+      'playList'
     ])
   },
   watch: {
-    playlist (newVal) {
+    playList (newVal) {
       this.handlePlaylist(newVal)
     }
   },

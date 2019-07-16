@@ -45,6 +45,7 @@ export default {
     }
   },
   props: {
+    // 父组件的传递时候不能用驼峰命名发 要用:bg-image将改属性传递过来
     bgImage: {
       type: String,
       default: ''

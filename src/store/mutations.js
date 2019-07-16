@@ -1,5 +1,5 @@
 /**
- * 操作改变motataio
+ * 操作改变motataio 改变state里面的数据
  */
 
 import * as types from './mutation-types'
@@ -26,5 +26,8 @@ const mutations = {
   [types.SET_CURRENT_INDEX] (state, index) {
     state.currentIndex = index
   },
+  [types.SET_DISC] (state, disc) {
+    state.disc = disc
+  }
 }
 export default mutations

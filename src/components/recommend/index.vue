@@ -15,7 +15,7 @@
         <div class="recommend-list">
           <h1 class="list-title">热门歌曲推荐</h1>
           <ul>
-            <li v-for="(v, k) in discList" :key="k" class="item">
+            <li @click="selectItem(v)" v-for="(v, k) in discList" :key="k" class="item">
               <div class="icon">
                 <img @load="loadImage" v-lazy="v.imgurl" height="60" width="60" alt="">
               </div>
@@ -28,14 +28,15 @@
         </div>
       </div>
     </scroll>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 import Slider from '@/base/slider'
 import Scroll from '@/base/scroll'
+import { mapMutations } from 'vuex'
 import { playlistMixin } from '@/common/js/mixin'
-// import loading from '@/base/loading'
 import { getRecommend, getDiscList } from '@/api/recommend'
 
 export default {
@@ -51,6 +52,13 @@ export default {
     this._getDiscList()
   },
   methods: {
+    selectItem(v) {
+      this.$router.push({
+        path: `/recommend/${v.dissid}`
+      })
+      // 将disc发送到mutations 这样就将state中的disc中的数据更改
+      this.setDisc(v)
+    },
     // 这个方法定义在mixin中 可以将mixin中的方法覆盖掉
     handlePlaylist(playlist) {
       const bottom = playlist.length > 0 ? '60px' : ''
@@ -77,8 +85,10 @@ export default {
         this.$refs.scroll.refresh()
         this.checkLoaded = true
       }
-      
-    }
+    },
+    ...mapMutations({
+      setDisc: 'SET_DISC'
+    })
   },
   components: {
     Slider,

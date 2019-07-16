@@ -3,6 +3,7 @@ import { playMode } from '@/api/config'
 
 const state = {
   singer: {},
+  disc: {}, // 歌单对象
   playing: false, // 播放状态
   fullScreen: false, // 播放器是否是全屏状态
   playList: [], // 播放列表

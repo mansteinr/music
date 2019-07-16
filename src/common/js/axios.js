@@ -29,7 +29,7 @@ export function axios(url, data, method = 'post', responseType = 'json') {
       if(res.data.code === 0) {
         resolve(res.data)
       } else {
-        console.log(90)
+        window.history.back()
       }
     }).catch(err => {
       loading.hide()
