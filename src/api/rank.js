@@ -3,7 +3,6 @@ import { axios } from '@/common/js/axios'
 import { commonParams, options } from './config'
 
 const debug = process.env.NODE_ENV !== 'production'
-console.log(commonParams, 'commonParams')
 export function getTopList () {
   const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg'
 
@@ -24,9 +23,11 @@ export function getMusicList (topid) {
 
   const data = Object.assign({}, commonParams, {
     topid,
+    g_tk: 1928093487,
     needNewCode: 1,
     uin: 0,
     tpl: 3,
+    format: 'jsonp',
     page: 'detail',
     type: 'top',
     platform: 'h5'

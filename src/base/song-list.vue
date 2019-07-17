@@ -5,8 +5,8 @@
         v-for="(v, k) in songs" 
         @click="selectItem(v, k)"
         :key="k">
-        <div class="rank">
-          <span></span>
+        <div class="rank" v-show="rank">
+          <span :class="getRankCls(k)" v-text="getRankText(k)"></span>
         </div>
         <div class="content">
           <h2 class="name">{{ v.name }}</h2>
@@ -23,6 +23,10 @@ export default {
     songs: {
       type: Array,
       default: () => []
+    },
+    rank: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -32,6 +36,18 @@ export default {
     },
     getDesc(song) {
       return `${song.singer}。${song.album}`
+    },
+    getRankCls (index) {
+      if (index <= 2) {
+        return `icon icon${index}`
+      } else {
+        return 'text'
+      }
+    },
+    getRankText (index) {
+      if (index > 2) {
+        return index + 1
+      }
     }
   }
 }
