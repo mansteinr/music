@@ -1,16 +1,45 @@
 <template>
   <div class="search">
     <div class="search-box-wrapper">
-      <search-box></search-box>
+      <search-box ref="searchBox"></search-box>
+    </div>
+    <div class="shortcut-wrapper">
+      <div class="shortcut">
+        <div class="hot-key">
+          <h1 class="title">热门搜索</h1>
+          <ul>
+            <li v-for="v in hotKey" :key="v.n" class="item" @click="addQuery(v)">
+              <span>{{ v.k }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { getHotKey } from '@/api/search'
 import SearchBox from '@/base/search-box'
 export default {
   data () {
-    return {}
+    return {
+      hotKey: []
+    }
+  },
+  created() {
+    this._getHotKey()
+  },
+  methods: {
+    _getHotKey() {
+      getHotKey().then(res => {
+        this.hotKey = res.data.hotkey.slice(0, 10)
+      })
+    },
+    addQuery(value) {
+      // 父组件直接效用子组件的方法 从而达到传值的效果
+      this.$refs.searchBox.setQuery(value.k)
+    }
   },
   components: {
     SearchBox
