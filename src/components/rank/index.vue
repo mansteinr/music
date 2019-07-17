@@ -35,6 +35,7 @@
       }
     },
     methods: {
+      // 处理底部mini播放器
       handlePlaylist (playlist) {
         const bottom = playlist.length > 0 ? '60px' : ''
         this.$refs.rank.style.bottom = bottom
@@ -44,15 +45,15 @@
         this.$router.push({
           path: `/rank/${item.id}`
         })
+        // 修改state中的topList数据
         this.setTopList(item)
       },
       _getTopList () {
         getTopList().then((res) => {
           this.topList = res.data.topList
-          console.log(this.topList)
         })
       },
-      ...mapMutations({
+      ...mapMutations({ // 获取SET_TOP_LIST的方法
         setTopList: 'SET_TOP_LIST'
       })
     },

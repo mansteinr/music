@@ -16,3 +16,5 @@ export const currentSong = (state) => {
 }
 
 export const disc = state => state.disc
+// toplistz组件可以拿到数据
+export const topList = state => state.topList

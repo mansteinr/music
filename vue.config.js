@@ -18,7 +18,7 @@ configureWebpack: {
   devServer: {
     hot: true, // 实时打包编译
     inline: true,  // 表示实时刷新浏览器
-    port: '8020',   // 指定打开浏览器的端口号
+    port: '8021',   // 指定打开浏览器的端口号
     before(app) {
       app.get('/api/getDiscList', function (req, res) {
         var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg' // 服务端请求原api
