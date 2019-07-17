@@ -113,6 +113,22 @@ configureWebpack: {
           console.log(e)
         })
       })
+
+      app.post('/api/topList', function (req, res) {
+        const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
+        axios.post(url, {
+          headers: {
+            referer: 'https://y.qq.com/n/yqq/toplist/4.html',
+            Origin: 'https://y.qq.com'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+
+      })
     }
   },
   chainWebpack: (config) => {
