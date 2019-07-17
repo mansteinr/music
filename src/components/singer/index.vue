@@ -6,10 +6,10 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import ListView from '@/base/listview'
 import Singer from '@/common/js/singer'
 import { getSingerList } from '@/api/singer'
-import { mapMutations } from 'vuex'
 import { playlistMixin } from '@/common/js/mixin'
 
 const HOT_NAME = '热门'
