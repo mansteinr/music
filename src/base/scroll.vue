@@ -46,7 +46,7 @@
           })
         }
         if (this.pullup) {
-          // 滚动结束
+          // 滚动结束 只触发一次
           this.scroll.on('scrollEnd', () => {
             // 滚动底部
             if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {

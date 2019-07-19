@@ -1,5 +1,6 @@
 <template>
-  <scroll 
+  <scroll
+    ref="suggest"
     :pullup="pullup"
     class="suggest" 
     :data="result" 
@@ -47,9 +48,17 @@ export default {
     // 搜索更多
     searchMore() {
       if(!this.hasMore) return
+      this.page++
+      search(this.query, this.page, this.showSinger, prepage).then(res => {
+        this.result = this.result.concat(this.getResult(res.data))
+        this.checkMore(res.data)
+      })
     },
     search() {
+      this.page = 1
       this.hasMore = true
+      // 滚到底部
+      this.$refs.suggest.scrollTo(0,0, 1000)
       search(this.query, this.page, this.showSinger, prepage).then(res => {
         this.result = this.getResult(res.data)
         this.checkMore(res.data)
