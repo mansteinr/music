@@ -1,5 +1,9 @@
 <template>
-  <div class="suggest">
+  <scroll 
+    :pullup="pullup"
+    class="suggest" 
+    :data="result" 
+    @scrollToEnd="searchMore">
     <ul class="suggest-list">
       <li class="suggest-item" v-for="(v, k) in result" :key="k">
         <div class="icon">
@@ -10,17 +14,23 @@
         </div>
       </li>
     </ul>
-  </div>
+  </scroll>
 </template>
 
 <script>
 import { search } from '@/api/search'
 import { filterSinger } from '@/common/js/song'
+import Scroll from '@/base/scroll'
+
+const prepage = 20
+
 export default {
   data() {
     return {
       page: 1,
-      result: []
+      result: [],
+      pullup: true,
+      hasMore: true // 用来判断是否是最后的数据
     }
   },
   props: {
@@ -34,10 +44,22 @@ export default {
     }
   },
   methods: {
+    // 搜索更多
+    searchMore() {
+      if(!this.hasMore) return
+    },
     search() {
-      search(this.query, this.page, this.showSinger).then(res => {
+      this.hasMore = true
+      search(this.query, this.page, this.showSinger, prepage).then(res => {
         this.result = this.getResult(res.data)
+        this.checkMore(res.data)
       })
+    },
+    checkMore(list) { // 判断是否是最后的数据
+      const song = list.song
+      if(!song.list.length || (song.curunm + song.curpage * prepage) > song.totalnum) {
+        this.hasMore = false
+      }
     },
     getIconCls(value) {
       if(value.type === 'singer') {
@@ -50,7 +72,7 @@ export default {
       if(value.type === 'singer') {
         return value.singername
       } else {
-        return `${value.songname}-${filterSinger(value.singer)}`
+         return `${value.songname}-${filterSinger(value.singer)}`
       }
     },
     getResult(data) {
@@ -59,9 +81,18 @@ export default {
         // type 是用来区分是歌手还是歌曲
         ret.push({...data.zhida, ...{type: 'singer'}})
       }
-      if(data.song) {
+     if(data.song) {
         ret = ret.concat(data.song.list)
       }
+      return ret
+    },
+    _normalizeSongs (list) {
+      let ret = []
+      list.forEach((musicData) => {
+        if (isValidMusic(musicData)) {
+          ret.push(createSong(musicData))
+        }
+      })
       return ret
     }
   },
@@ -69,6 +100,9 @@ export default {
     query() {
       this.search()
     }
+  },
+  components: {
+    Scroll
   }
 }
 </script>

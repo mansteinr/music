@@ -59,6 +59,7 @@ export default {
       background $color-highlight-background
       color $color-text
       font-size $font-size-medium
+      height 100%
       &::placeholder
         color $color-text-d
     .icon-dismiss
