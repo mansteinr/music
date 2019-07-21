@@ -246,7 +246,7 @@ export default {
     // 歌曲播放完成时
     end() {
       // 单曲循环模式
-      if(this.mode === play.loop) {
+      if(this.mode === playMode.loop) {
         this.loop()
       } else {
         // 切换至下一首
@@ -486,6 +486,7 @@ export default {
   },
   created() {
     this.touch = {}
+    console.log(this.playList, 'op')
   },
   watch: {
     // 当currentSong发生变化时 播放音乐 调用audio的API play即可实现播放功能

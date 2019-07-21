@@ -6,7 +6,7 @@
     :data="result" 
     @scrollToEnd="searchMore">
     <ul class="suggest-list">
-      <li class="suggest-item" v-for="(v, k) in result" :key="k">
+      <li @click="selectItem(v)" class="suggest-item" v-for="(v, k) in result" :key="k">
         <div class="icon">
           <i :class="getIconCls(v)"></i>
         </div>
@@ -22,6 +22,10 @@
 import { search } from '@/api/search'
 import { filterSinger } from '@/common/js/song'
 import Scroll from '@/base/scroll'
+import Singer from '@/common/js/singer'
+import { mapMutations, mapActions } from 'vuex'
+import { createSong, isValidMusic, processSongsUrl } from '@/common/js/song'
+ 
 
 const prepage = 20
 
@@ -45,12 +49,31 @@ export default {
     }
   },
   methods: {
+    // 点击打开详情页面
+    selectItem(item) {
+      if(item.type === 'singer') {
+        const singer = new Singer({
+          id: item.singermid,
+          name: item.singername
+        })
+        this.$router.push({
+          path: `/search/${singer.id}`
+        })
+        this.setSinger(singer)
+      } else {
+        // 提交action
+        this.insertSong(item)
+      }
+      this.$emit('select', item)
+    },
     // 搜索更多
     searchMore() {
       if(!this.hasMore) return
       this.page++
       search(this.query, this.page, this.showSinger, prepage).then(res => {
-        this.result = this.result.concat(this.getResult(res.data))
+        this.getResult(res.data).then((result) => {
+          this.result = result
+        })
         this.checkMore(res.data)
       })
     },
@@ -60,7 +83,9 @@ export default {
       // 滚到底部
       this.$refs.suggest.scrollTo(0,0, 1000)
       search(this.query, this.page, this.showSinger, prepage).then(res => {
-        this.result = this.getResult(res.data)
+        this.getResult(res.data).then((result) => {
+          this.result = result
+        })
         this.checkMore(res.data)
       })
     },
@@ -81,19 +106,19 @@ export default {
       if(value.type === 'singer') {
         return value.singername
       } else {
-         return `${value.songname}-${filterSinger(value.singer)}`
+        return `${value.name}-${value.singer}`
       }
     },
     getResult(data) {
       let ret = []
-      if(data.zhida && data.zhida.singerid) {
+      if(data.zhida && data.zhida.singerid && this.page === 1) {
         // type 是用来区分是歌手还是歌曲
         ret.push({...data.zhida, ...{type: 'singer'}})
       }
-     if(data.song) {
-        ret = ret.concat(data.song.list)
-      }
-      return ret
+      return processSongsUrl(this._normalizeSongs(data.song.list)).then((songs) => {
+        ret = ret.concat(songs)
+        return ret
+      })
     },
     _normalizeSongs (list) {
       let ret = []
@@ -103,7 +128,13 @@ export default {
         }
       })
       return ret
-    }
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    }),
+    ...mapActions([
+      'insertSong'
+    ])
   },
   watch: {
     query() {
