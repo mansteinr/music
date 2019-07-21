@@ -2,6 +2,8 @@
   <scroll
     ref="suggest"
     :pullup="pullup"
+    :beforeScroll="beforeScroll"
+    @beforeScroll="listScroll"
     class="suggest" 
     :data="result" 
     @scrollToEnd="searchMore">
@@ -39,7 +41,8 @@ export default {
       page: 1,
       result: [],
       pullup: true,
-      hasMore: true // 用来判断是否是最后的数据
+      hasMore: true, // 用来判断是否是最后的数据
+      beforeScroll: true, // 列表滚动时 收起手机的小键盘
     }
   },
   props: {
@@ -53,6 +56,9 @@ export default {
     }
   },
   methods: {
+    listScroll() {
+      this.$emit('listScroll')
+    },
     // 点击打开详情页面
     selectItem(item) {
       if(item.type === 'singer') {

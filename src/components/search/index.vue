@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="search-result" v-show="query">
-      <suggest :query="query"></suggest>
+      <suggest @listScroll="blurInput" :query="query"></suggest>
     </div>
     <router-view></router-view>
   </div>
@@ -37,6 +37,10 @@ export default {
     this._getHotKey()
   },
   methods: {
+    blurInput() {
+      console.log('blurInput')
+      this.$refs.searchBox.blur()
+    },
     // 监听search-box的搜索值
     onQueryChange(value) {
       // 拿到搜索值 在传递给suggest组件

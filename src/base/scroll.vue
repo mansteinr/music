@@ -30,6 +30,10 @@
       pullup: { // 是否开启上拉刷新
         type: Boolean,
         default: false
+      },
+      beforeScroll: {
+        type: Boolean,
+        default: false
       }
     },
     methods: {
@@ -52,6 +56,12 @@
             if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
               this.$emit('scrollToEnd')
             }
+          })
+        }
+        if(this.beforeScroll) {
+          // 监听beforeScroll事件 并向父组件派发事件
+          this.scroll.on('beforeScroll', () => {
+            this.$emit('beforeScroll')
           })
         }
       },
