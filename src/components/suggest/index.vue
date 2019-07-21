@@ -15,6 +15,9 @@
         </div>
       </li>
     </ul>
+    <div class="no-result-wrapper" v-show="!hasMore && !result.length">
+      <no-result title="暂无数据"></no-result>
+    </div>
   </scroll>
 </template>
 
@@ -22,6 +25,7 @@
 import { search } from '@/api/search'
 import { filterSinger } from '@/common/js/song'
 import Scroll from '@/base/scroll'
+import NoResult from '@/base/no-result'
 import Singer from '@/common/js/singer'
 import { mapMutations, mapActions } from 'vuex'
 import { createSong, isValidMusic, processSongsUrl } from '@/common/js/song'
@@ -142,7 +146,8 @@ export default {
     }
   },
   components: {
-    Scroll
+    Scroll,
+    NoResult
   }
 }
 </script>

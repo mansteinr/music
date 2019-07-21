@@ -46,4 +46,18 @@ export function shuffle (arr) {
   }
   return _arr
 }
+//截留函数
+export function debounce (func, delay) {
+  // 返回一个新的函数 这个新函数 延迟返回
+  // 避免输入框输入的时候 反复调用函数
+  let timer 
+  return function (...args) {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func.apply(this, args)
+    }, delay)
+  }
+}
 

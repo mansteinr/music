@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { debounce } from '@/common/js/utils'
 export default {
   data() {
     return {
@@ -30,9 +31,9 @@ export default {
   created() {
     // 监听搜索值 并派发出去
     // 为什么不直接用用watch?
-    this.$watch('query', (value) => {
+    this.$watch('query', debounce((value) => {
       this.$emit('query', value)
-    })
+    }, 200))
   }
 }
 </script>
