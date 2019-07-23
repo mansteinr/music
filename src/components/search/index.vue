@@ -16,7 +16,7 @@
         <div class="search-history" v-show="searchHistory.length">
           <h1 class="title">
             <span class="text">搜索历史</span>
-            <span class="clear" @click="deleteAll">
+            <span class="clear" @click="showConfirm">
               <i class="icon-clear"></i>
             </span>
           </h1>
@@ -29,18 +29,26 @@
       </div>
     </div>
     <div class="search-result" v-show="query">
-      <suggest @select="saveSearch" @listScroll="blurInput" :query="query"></suggest>
+      <suggest 
+        @select="saveSearch" 
+        @listScroll="blurInput" 
+        :query="query"></suggest>
     </div>
+    <confirm 
+      ref="confirm"
+      @confirm="clearSearchHistory"
+      ></confirm>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+import Suggest from '../suggest'
+import Confirm from '@/base/confirm'
 import { getHotKey } from '@/api/search'
 import SearchBox from '@/base/search-box'
 import SearchList from '@/base/search-list'
 import { mapActions, mapGetters } from 'vuex'
-import Suggest from '../suggest'
 export default {
   data () {
     return {
@@ -58,6 +66,9 @@ export default {
     ])
   },
   methods: {
+    showConfirm() {
+      this.$refs.confirm.show()
+    },
     // 保存搜素历史
     saveSearch() {
       this.saveSearchHistory(this.query)
@@ -83,9 +94,6 @@ export default {
       // 父组件直接效用子组件的方法 从而达到传值的效果
       this.$refs.searchBox.setQuery(value.k ? value.k : value)
     },
-    deleteAll() {
-      this.clearSearchHistory()
-    },
     ...mapActions([
       'saveSearchHistory',
       'deleteSearchHistory',
@@ -95,6 +103,7 @@ export default {
   components: {
     SearchList,
     SearchBox,
+    Confirm,
     Suggest
   }
 }
