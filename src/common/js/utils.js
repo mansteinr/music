@@ -1,3 +1,4 @@
+
 export function format (interval) {
   interval = interval | 0 // 向下取整
   const minute = interval / 60 | 0
@@ -61,3 +62,61 @@ export function debounce (func, delay) {
   }
 }
 
+function insertArr (arr, val, compare, maxLen) {
+  const index = arr.findIndex(compare)
+  // 如果等于0  则是第一条数据 什么都需要做
+  if (index === 0) {
+    return
+  }
+  // 如果不少第一条 则删除之前的 再把当前的这条插入数组的第一个位置
+  // 有的话 删除在插入 无的话 则直接插入
+  if (index > 0) {
+    arr.splice(index, 1)
+  }
+  arr.unshift(val)
+  if (maxLen && arr.length > maxLen) {
+    // 将数组中的最后一个删除
+    arr.pop()
+  }
+  // return arr
+}
+
+// 存储搜素历史 最多存储15条 大于15条 则将最原始的剔除
+
+export function saveSearch (query) {
+  // 获取是否已经存储搜索历史
+  console.log(localStorage.getItem('search'))
+  let searches = localStorage.getItem('search') ? JSON.parse(localStorage.getItem('search')) : []
+  insertArr(searches, query, (v) => {
+    return v === query
+  }, 15)
+  // searches存储本地
+  console.log(searches, 'searches')
+  localStorage.setItem('search', JSON.stringify(searches))
+  return searches
+}
+
+
+function deleteArray (arr, compare) {
+  let index = arr.findIndex(compare)
+  if (index > -1) {
+    arr.splice(index, 1)
+  }
+}
+
+export function deleteSearch (query) {
+  console.log(localStorage.getItem('search'))
+  let searches = localStorage.getItem('search') ? JSON.parse(localStorage.getItem('search')) : []
+  deleteArray(searches, (item) => {
+    return item === query
+  })
+  // searches存储本地
+  console.log(searches)
+  localStorage.setItem('search', JSON.stringify(searches))
+  return searches
+}
+
+export function clearSearch () {
+  localStorage.removeItem('search')
+  return []
+}

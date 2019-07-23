@@ -74,6 +74,7 @@ export default {
         // 提交action
         this.insertSong(item)
       }
+      // 传递给父组件 保存搜索历史
       this.$emit('select', item)
     },
     // 搜索更多

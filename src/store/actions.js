@@ -3,7 +3,7 @@
  */
 import * as types from './mutation-types'
 import { playMode } from '@/api/config'
-import { shuffle } from '../common/js/utils'
+import { shuffle, saveSearch, deleteSearch, clearSearch } from '../common/js/utils'
 
 // 随机列表中的index对应顺序列表中的index
 function findIndex (list, song) {
@@ -35,7 +35,6 @@ export const randomPlay = function ({ commit }, { list }) {
 }
 
 export const insertSong = function ({ commit, state }, song) {
-  console.log(state)
   // 不能直接修改state中的数据 所以.slice()复制一个副本 修改副本 在mutations里面修改数据
   let playList = state.playList.slice()
   let sequenceList = state.sequenceList.slice()
@@ -81,4 +80,16 @@ export const insertSong = function ({ commit, state }, song) {
   commit(types.SET_CURRENT_INDEX, currentIndex)
   commit(types.SET_FULL_SCREEN, true)
   commit(types.SET_PLAYING_STATE, true)
+}
+
+export const saveSearchHistory = function ({ commit }, query) {
+  commit(types.SET_SEARCH_HISTORY, saveSearch(query))
+}
+
+export const deleteSearchHistory = function ({ commit }, query) {
+  commit(types.SET_SEARCH_HISTORY, deleteSearch(query))
+}
+
+export const clearSearchHistory = function ({ commit }) {
+  commit(types.SET_SEARCH_HISTORY, clearSearch())
 }
