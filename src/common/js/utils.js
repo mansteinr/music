@@ -85,13 +85,11 @@ function insertArr (arr, val, compare, maxLen) {
 
 export function saveSearch (query) {
   // 获取是否已经存储搜索历史
-  console.log(localStorage.getItem('search'))
   let searches = localStorage.getItem('search') ? JSON.parse(localStorage.getItem('search')) : []
   insertArr(searches, query, (v) => {
     return v === query
   }, 15)
   // searches存储本地
-  console.log(searches, 'searches')
   localStorage.setItem('search', JSON.stringify(searches))
   return searches
 }
@@ -105,13 +103,11 @@ function deleteArray (arr, compare) {
 }
 
 export function deleteSearch (query) {
-  console.log(localStorage.getItem('search'))
   let searches = localStorage.getItem('search') ? JSON.parse(localStorage.getItem('search')) : []
   deleteArray(searches, (item) => {
     return item === query
   })
   // searches存储本地
-  console.log(searches)
   localStorage.setItem('search', JSON.stringify(searches))
   return searches
 }

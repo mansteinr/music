@@ -24,9 +24,8 @@
 </template>
 
 <script>
-import { search } from '@/api/search'
-import { filterSinger } from '@/common/js/song'
 import Scroll from '@/base/scroll'
+import { search } from '@/api/search'
 import NoResult from '@/base/no-result'
 import Singer from '@/common/js/singer'
 import { mapMutations, mapActions } from 'vuex'
@@ -56,6 +55,9 @@ export default {
     }
   },
   methods: {
+    refresh() {
+      this.$refs.suggest.refresh()
+    },
     listScroll() {
       this.$emit('listScroll')
     },
