@@ -94,11 +94,12 @@
             <i :class="miniIcon" class="icon-mini" @click.stop="togglePlaying"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click="showPlaylist">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <!-- <playlist ref="playlist"></playlist> -->
     <!-- 播放音乐 -->
     <!-- 当浏览器能够开始播放指定的音频/视频时，发生 canplay 事件。 -->
     <!-- 当音频/视频处于加载过程中时，会依次发生以下事件：
@@ -124,16 +125,15 @@
 /**
  * 利用js创建css动画，利用第三方库 create-keyframe-animation
  */
-import { format } from '@/common/js/utils'
+import Lyric from 'lyric-parser'
+import Playlist from '@/components/playlist'
+import Scroll from '@/base/scroll'
+import { playMode } from '@/api/config'
+import ProgressBar from '@/base/progress-bar'
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
-import ProgressBar from '@/base/progress-bar'
 import ProgressCircle from '@/base/progress-circle'
-import { playMode } from '@/api/config'
-import { shuffle } from '@/common/js/utils'
-import Lyric from 'lyric-parser'
-import Scroll from '@/base/scroll'
-import { setTimeout } from 'timers';
+import { format, shuffle } from '@/common/js/utils'
 
 export default {
   data() {
@@ -186,6 +186,10 @@ export default {
     ])
   },
   methods: {
+    showPlaylist() {
+      // playlist组件的显示
+      this.$refs.playlist.show()
+    },
     middleTouchStart(e) {
       this.touch.initiated = true
       const touch = e.touches[0]
@@ -486,7 +490,6 @@ export default {
   },
   created() {
     this.touch = {}
-    console.log(this.playList, 'op')
   },
   watch: {
     // 当currentSong发生变化时 播放音乐 调用audio的API play即可实现播放功能
@@ -517,8 +520,9 @@ export default {
       })
     }
   },
-  components:{
+  components: {
     Scroll,
+    Playlist,
     ProgressBar,
     ProgressCircle
   }
