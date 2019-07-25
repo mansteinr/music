@@ -99,7 +99,7 @@
         </div>
       </div>
     </transition>
-    <!-- <playlist ref="playlist"></playlist> -->
+    <playlist ref="playlist"></playlist>
     <!-- 播放音乐 -->
     <!-- 当浏览器能够开始播放指定的音频/视频时，发生 canplay 事件。 -->
     <!-- 当音频/视频处于加载过程中时，会依次发生以下事件：
@@ -126,9 +126,9 @@
  * 利用js创建css动画，利用第三方库 create-keyframe-animation
  */
 import Lyric from 'lyric-parser'
-import Playlist from '@/components/playlist'
 import Scroll from '@/base/scroll'
 import { playMode } from '@/api/config'
+import Playlist from '@/components/playlist'
 import ProgressBar from '@/base/progress-bar'
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'

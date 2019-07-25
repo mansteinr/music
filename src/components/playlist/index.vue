@@ -39,7 +39,7 @@
           <span>关闭</span>
         </div>
       </div>
-      <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
+      <!-- <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm> -->
       <!-- <add-song ref="addSong"></add-song> -->
     </div>
   </transition>
@@ -49,7 +49,7 @@
 
   import { mapActions } from 'vuex'
   import Scroll from '@/base/scroll'
-  import Confirm from '@/base/confirm'
+  // import Confirm from '@/base/confirm'
   import { playMode } from '@/api/config'
   import { playerMixin } from '@/common/js/mixin'
   // import AddSong from '@/components/add-song/add-song'
@@ -75,14 +75,14 @@
           // 因为只有显示高度才能精确计算
           // 重新刷新 否则无法滚动
           this.$refs.listContent.refresh()
-          this.scrollToCurrent(this.currentSong)
+          // this.scrollToCurrent(this.currentSong)
         }, 20)
       },
       hide () {
         this.showFlag = false
       },
       showConfirm () {
-        this.$refs.confirm.show()
+        // this.$refs.confirm.show()
       },
       confirmClear () {
         this.deleteSongList()
@@ -95,7 +95,9 @@
         }
         return ''
       },
+      // 选中当前播放的歌曲
       selectItem (item, index) {
+        // 如果时随机播放要重新计算index 否则不需要计算
         if (this.mode === playMode.random) {
           index = this.playlist.findIndex((song) => {
             return song.id === item.id
@@ -142,8 +144,8 @@
       }
     },
     components: {
-      Scroll,
-      Confirm,
+      Scroll
+      // Confirm
       // AddSong
     }
   }
