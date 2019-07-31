@@ -5,8 +5,8 @@
       <div class="list-wrapper" @click.stop>
         <div class="list-header">
           <h1 class="title">
-            <i class="icon"></i>
-            <!-- <span class="text">{{modeText}}</span> -->
+            <i class="icon" :class="iconMode" @click="changeMode"></i>
+            <span class="text">{{ modeText }}</span>
             <span class="clear" @click="showConfirm">
               <i class="icon-clear"></i>
             </span>
@@ -56,10 +56,11 @@
   import Scroll from '@/base/scroll'
   import Confirm from '@/base/confirm'
   import { playMode } from '@/api/config'
-  import { mapActions, mapGetters, mapMutations } from 'vuex'
+  import { playerMixin } from '@/common/js/mixin'
+  import { mapActions } from 'vuex'
 
   export default {
-    // mixins: [playerMixin],
+    mixins: [playerMixin],
     data () {
       return {
         // 控制显示隐藏
@@ -98,10 +99,6 @@
         //将播放状态设置为true
         this.setPlayingState(true)
       },
-      ...mapMutations({
-        setCurrentIndex: 'SET_CURRENT_INDEX',
-        setPlayingState: 'SET_PLAYING_STATE',
-      }),
       ...mapActions([
         'deleteSong',
         'deleteSongList'
@@ -139,17 +136,14 @@
         this.scrollToCurrent(newSong)
       }
     },
-    computed: {
-      ...mapGetters([
-        'sequenceList',
-        'currentSong',
-        'playList',
-        'mode'
-      ])
-    },
     components: {
       Scroll,
       Confirm
+    },
+    computed: {
+      modeText() {
+        return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
+      }
     }
   }
 </script>

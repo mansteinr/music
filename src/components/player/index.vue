@@ -131,11 +131,13 @@ import { playMode } from '@/api/config'
 import Playlist from '@/components/playlist'
 import ProgressBar from '@/base/progress-bar'
 import { mapGetters, mapMutations } from 'vuex'
+import { playerMixin } from '@/common/js/mixin'
 import animations from 'create-keyframe-animation'
 import ProgressCircle from '@/base/progress-circle'
 import { format, shuffle } from '@/common/js/utils'
 
 export default {
+  mixins: [ playerMixin ],
   data() {
     return {
       /**
@@ -171,18 +173,10 @@ export default {
       // 当前的时间除以歌曲总时间 来计算当前比例
       return this.currentTime / this.currentSong.duration
     },
-    iconMode() {
-      // 播放模式的图标
-      return this.mode === playMode.sequence ? 'icon-sequence' : (this.mode === playMode.loop ? 'icon-loop' : 'icon-random')
-    },
     ...mapGetters([
       'fullScreen',
-      'playList',
-      'currentSong',
       'playing',
-      'currentIndex',
-      'mode',
-      'sequenceList'
+      'currentIndex'
     ])
   },
   methods: {
@@ -265,29 +259,6 @@ export default {
         // 当循环播放重新开始时，将歌词重新设置到最开始
         this.currentLyric.seek(0)
       }
-    },
-    // 切换模式
-    changeMode() {
-      const mode = (this.mode + 1) % 3
-      this.setPlayMode(mode)
-      let list = null
-      if(mode === playMode.random) {
-        list = shuffle(this.sequenceList)
-      } else {
-        list = this.sequenceList
-      }
-      this.resetCurrentIdnex(list)
-      this.setPlayList(list)
-    },
-    // 切换模式的时候 不希望currentIdnex发生改变
-    // 当currentIdnex 发生改变时 需要重置currentIdnex
-    // 保证切换时歌曲不会发生改变
-    resetCurrentIdnex(list) {
-      // 当播放模式
-      let index = list.findIndex(v => {
-        return v.id === this.currentSong.id
-      })
-      this.setCurrentIndex(index)
     },
     getLyric() {
       this.currentSong.getLyric().then(res => {
@@ -457,11 +428,7 @@ export default {
       this.$refs.cdWrapper.style.transform = ''
     },
     ...mapMutations({
-      setFullScreen: 'SET_FULL_SCREEN',
-      setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayMode: 'SET_PLAY_MODE',
-      setPlayList: 'SET_PLAYLIST'
+      setFullScreen: 'SET_FULL_SCREEN'
     }),
     // 获取mini播放器中的唱片位置
     getPosotionAndScale() {
