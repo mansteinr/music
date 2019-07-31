@@ -11,7 +11,13 @@
         <!-- 监听search-box的query事件 -->
         <search-box @query="onQueryChange" placeholder="搜索歌曲"></search-box>
       </div>
-      <div class="shortcut" v-show="!query"></div>
+      <div class="shortcut" v-show="!query">
+        <!-- 监听switch组件的switch事件 -->
+        <switches
+          @switch="switchItem"
+          :switches="switches" 
+          :currentIndex="currentIndex"></switches>
+      </div>
       <div class="searcg-result" v-show="query">
         <suggest 
           :query="query" 
@@ -24,16 +30,23 @@
 </template>
 
 <script>
+import Switches from '@/base/switches'
 import SearchBox from '@/base/search-box'
 import Suggest from '@/components/suggest'
 import { searchMixin } from '@/common/js/mixin'
+
 export default {
   mixins: [ searchMixin ],
   data() {
     return {
       // 不搜索歌手
       showSinger: false,
-      showFlag: false
+      showFlag: false,
+      currentIndex: 0,
+      switches: [
+        {name: '最近播放'},
+        {name: '搜索历史'},
+      ]
     }
   },
   methods: {
@@ -45,10 +58,14 @@ export default {
     },
     selectSuggest() {
       this.saveSearch()
+    },
+    switchItem(index) {
+      this.currentIndex = index
     }
   },
   components: {
     Suggest,
+    Switches,
     SearchBox
   }
 }
