@@ -2,6 +2,7 @@
 import { playMode } from '@/api/config'
 
 const state = {
+  playHistory: [], // 播放历史
   topList: [], // 排行榜列表
   singer: {},
   disc: {}, // 歌单对象
