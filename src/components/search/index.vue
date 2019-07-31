@@ -54,15 +54,14 @@ import Scroll from '@/base/scroll'
 import { getHotKey } from '@/api/search'
 import SearchBox from '@/base/search-box'
 import SearchList from '@/base/search-list'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
+import { playlistMixin, searchMixin } from '@/common/js/mixin'
 
-import { playlistMixin } from '@/common/js/mixin'
 export default {
-  mixins: [ playlistMixin ],
+  mixins: [ playlistMixin, searchMixin ],
   data () {
     return {
       hotKey: [],
-      query: '',
       searchHistoryArr: []
     }
   },
@@ -77,10 +76,7 @@ export default {
     // scroll就会重新计算高度
     shortcut() {
       return this.hotKey.concat(this.searchHistory)
-    },
-    ...mapGetters([
-      'searchHistory'
-    ])
+    }
   },
   methods: {
     handlePlaylist(playlist) {
@@ -94,34 +90,15 @@ export default {
     showConfirm() {
       this.$refs.confirm.show()
     },
-    // 保存搜素历史
-    saveSearch() {
-      this.saveSearchHistory(this.query)
-    },
     deleteItem(item) {
       this.deleteSearchHistory(item)
-    },
-    blurInput() {
-      this.$refs.searchBox.blur()
-    },
-    // 监听search-box的搜索值
-    onQueryChange(value) {
-      // 拿到搜索值 在传递给suggest组件
-      // 就会触发suggest中的watch
-      this.query = value
     },
     _getHotKey() {
       getHotKey().then(res => {
         this.hotKey = res.data.hotkey.slice(0, 10)
       })
     },
-    addQuery(value) {
-      // 父组件直接效用子组件的方法 从而达到传值的效果
-      this.$refs.searchBox.setQuery(value.k ? value.k : value)
-    },
     ...mapActions([
-      'saveSearchHistory',
-      'deleteSearchHistory',
       'clearSearchHistory'
     ])
   },

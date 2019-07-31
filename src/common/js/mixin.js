@@ -122,16 +122,21 @@ export const searchMixin = {
     ])
   },
   methods: {
+    // 监听search-box的搜索值
     onQueryChange (query) {
+      // 拿到搜索值 在传递给suggest组件
+      // 就会触发suggest中的watch
       // 处理带空格的情况
       this.query = query.trim()
     },
     blurInput () {
       this.$refs.searchBox.blur()
     },
-    addQuery (query) {
-      this.$refs.searchBox.setQuery(query)
+    addQuery (value) {
+      // 父组件直接效用子组件的方法 从而达到传值的效果
+      this.$refs.searchBox.setQuery(value.k ? value.k : value)
     },
+    // 保存搜素历史
     saveSearch () {
       this.saveSearchHistory(this.query)
     },

@@ -7,17 +7,32 @@
           <i class="icon-close"></i>
         </div>
       </div>
-      <div class="search-box-wrapper"></div>
-      <div class="shortcut"></div>
-      <div class="searcg-result"></div>
+      <div class="search-box-wrapper">
+        <!-- 监听search-box的query事件 -->
+        <search-box @query="onQueryChange" placeholder="搜索歌曲"></search-box>
+      </div>
+      <div class="shortcut" v-show="!query"></div>
+      <div class="searcg-result" v-show="query">
+        <suggest 
+          :query="query" 
+          :showFlag="showFlag"
+          @listScroll="blurInput"
+          @select="selectSuggest"></suggest>
+      </div>
     </div>
   </transition>
 </template>
 
 <script>
+import SearchBox from '@/base/search-box'
+import Suggest from '@/components/suggest'
+import { searchMixin } from '@/common/js/mixin'
 export default {
+  mixins: [ searchMixin ],
   data() {
     return {
+      // 不搜索歌手
+      showSinger: false,
       showFlag: false
     }
   },
@@ -27,7 +42,14 @@ export default {
     },
     hide() {
       this.showFlag = false
+    },
+    selectSuggest() {
+      this.saveSearch()
     }
+  },
+  components: {
+    Suggest,
+    SearchBox
   }
 }
 </script>
