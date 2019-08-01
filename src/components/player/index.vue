@@ -130,11 +130,11 @@ import Scroll from '@/base/scroll'
 import { playMode } from '@/api/config'
 import Playlist from '@/components/playlist'
 import ProgressBar from '@/base/progress-bar'
-import { mapGetters, mapMutations } from 'vuex'
 import { playerMixin } from '@/common/js/mixin'
 import animations from 'create-keyframe-animation'
 import ProgressCircle from '@/base/progress-circle'
 import { format, shuffle } from '@/common/js/utils'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   mixins: [ playerMixin ],
@@ -307,6 +307,8 @@ export default {
     },
     ready() {
       this.songReady = true
+      // 写入palyHistory
+      this.savePlayHistory(this.currentSong)
     },
     // 防止网络出错
     error() {
@@ -430,6 +432,9 @@ export default {
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN'
     }),
+    ...mapActions([
+      'savePlayHistory'
+    ]),
     // 获取mini播放器中的唱片位置
     getPosotionAndScale() {
       // mini播放器中的唱片的宽度 这是css中定义的

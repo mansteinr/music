@@ -17,6 +17,13 @@
           @switch="switchItem"
           :switches="switches" 
           :currentIndex="currentIndex"></switches>
+          <div class="list-wrapper">
+            <scroll v-if="currentIndex === 0" :data="playHistory">
+              <div class="list-inner">
+                <song-list :songs="playHistory"></song-list>
+              </div>
+            </scroll>
+          </div>
       </div>
       <div class="searcg-result" v-show="query">
         <suggest 
@@ -30,7 +37,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import Scroll from '@/base/scroll'
 import Switches from '@/base/switches'
+import SongList from '@/base/song-list'
 import SearchBox from '@/base/search-box'
 import Suggest from '@/components/suggest'
 import { searchMixin } from '@/common/js/mixin'
@@ -63,10 +73,17 @@ export default {
       this.currentIndex = index
     }
   },
+  computed: {
+    ...mapGetters([
+      'playHistory'
+    ])
+  },
   components: {
+    Scroll,
     Suggest,
     Switches,
-    SearchBox
+    SearchBox,
+    SongList
   }
 }
 </script>

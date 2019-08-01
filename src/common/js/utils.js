@@ -116,3 +116,22 @@ export function clearSearch () {
   localStorage.removeItem('search')
   return []
 }
+
+//定义常量 存储200首歌曲
+const PALY_KEY = '_play_', PLay_MAX_LENGTH = 200
+
+export function savePlay (song) {
+  // 获取当前存储的数据 没有则为空数组
+  let songs = localStorage.getItem(PALY_KEY) ? JSON.parse(localStorage.getItem(PALY_KEY)) : []
+  insertArr(songs, song, (v) => {
+    // 比较函数 如果song存在 则移动前面
+    return v.id === song.id
+  }, PLay_MAX_LENGTH)
+  // 将数据 存储在本地
+  localStorage.setItem(PALY_KEY, JSON.stringify(songs))
+  return songs
+}
+
+export function loadPaly () {
+  return localStorage.getItem(PALY_KEY) ? JSON.parse(localStorage.getItem(PALY_KEY)) : []
+}

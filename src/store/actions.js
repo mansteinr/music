@@ -3,7 +3,7 @@
  */
 import * as types from './mutation-types'
 import { playMode } from '@/api/config'
-import { shuffle, saveSearch, deleteSearch, clearSearch } from '../common/js/utils'
+import { shuffle, saveSearch, deleteSearch, clearSearch, savePlay } from '../common/js/utils'
 
 // 随机列表中的index对应顺序列表中的index
 function findIndex (list, song) {
@@ -124,4 +124,8 @@ export const deleteSongList = function({commit}) {
     commit(types.SET_SEQUENCE_LIST, [])
     commit(types.SET_CURRENT_INDEX, -1)
     commit(types.SET_PLAYING_STATE, false)
+}
+
+export const savePlayHistory = function ({ commit }, song) {
+  commit(types.SET_PLAY_HISTORY, savePlay(song))
 }
