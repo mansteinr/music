@@ -42,11 +42,18 @@
           @listScroll="blurInput"
           @select="selectSuggest"></suggest>
       </div>
+      <top-tip ref="topTip">
+        <div class="tip-title">
+          <i class="icon-ok"></i>
+          <span class="text">一首歌曲已经添加到播放队列中</span>
+        </div>
+      </top-tip>
     </div>
   </transition>
 </template>
 
 <script>
+import TopTip from '@/base/top-tip'
 import Scroll from '@/base/scroll'
 import Song from '@/common/js/song'
 import Switches from '@/base/switches'
@@ -90,6 +97,7 @@ export default {
     },
     selectSuggest() {
       this.saveSearch()
+      this.$refs.topTip.show()
     },
     switchItem(index) {
       this.currentIndex = index
@@ -98,6 +106,7 @@ export default {
       if(index !== 0) {
         // 插入Song的实例
         this.insertSong(new Song(song))
+        this.$refs.topTip.show()
       }
     },
     deleteItem(item) {
@@ -113,6 +122,7 @@ export default {
     ])
   },
   components: {
+    TopTip,
     Scroll,
     Suggest,
     SongList,
