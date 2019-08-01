@@ -4,7 +4,7 @@
       <search-box @query="onQueryChange" ref="searchBox"></search-box>
     </div>
     <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
-      <scroll class="shortcut" :data="shortcut" ref="shortcut">
+      <scroll :refreshDelay="refreshDelay" class="shortcut" :data="shortcut" ref="shortcut">
         <!-- 如果scroll组件包裹两个元素无法定位 所以用一个div包裹起来 -->
         <div>
           <div class="hot-key">
@@ -62,6 +62,7 @@ export default {
   data () {
     return {
       hotKey: [],
+      refreshDelay: 120,
       searchHistoryArr: []
     }
   },

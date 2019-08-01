@@ -34,6 +34,12 @@
       beforeScroll: {
         type: Boolean,
         default: false
+      },
+      // 有些组件引用scroll 会有些动画 这些动画完成不是瞬间的
+      // 有可能在20ms完成不了 这个是hisCroll组件计算的高度会不对
+      refreshDalay: {
+        type: Number,
+        default: 20
       }
     },
     methods: {
@@ -84,7 +90,7 @@
     mounted() {
       setTimeout(() => {
         this.initScroll()
-      }, 20)
+      }, this.refreshDalay)
       // 用nextTick 无法监听到 scroll滚动事件
       // this.$nextTick(() => {
       //   this.initScroll()

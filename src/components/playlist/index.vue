@@ -12,7 +12,8 @@
             </span>
           </h1>
         </div>
-        <scroll 
+        <scroll
+          :refreshDalay="refreshDalay"
           :data="sequenceList" 
           ref="listContent" 
           class="list-content" 
