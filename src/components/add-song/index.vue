@@ -9,7 +9,7 @@
       </div>
       <div class="search-box-wrapper">
         <!-- 监听search-box的query事件 -->
-        <search-box @query="onQueryChange" placeholder="搜索歌曲"></search-box>
+        <search-box ref="searchBox" @query="onQueryChange" placeholder="搜索歌曲"></search-box>
       </div>
       <div class="shortcut" v-show="!query">
         <!-- 监听switch组件的switch事件 -->
@@ -18,9 +18,19 @@
           :switches="switches" 
           :currentIndex="currentIndex"></switches>
           <div class="list-wrapper">
-            <scroll v-if="currentIndex === 0" :data="playHistory">
+            <scroll ref="songList" class="list-scroll" v-if="currentIndex === 0" :data="playHistory">
               <div class="list-inner">
-                <song-list :songs="playHistory"></song-list>
+                <song-list
+                  @select="selectSong"
+                  :songs="playHistory"></song-list>
+              </div>
+            </scroll>
+            <scroll ref="searchList" class="list-scroll" v-if="currentIndex === 1" :data="searchHistory">
+              <div class="list-inner">
+                <search-list
+                  :searches="searchHistory"
+                  @select="addQuery"
+                  @deleteItem="deleteItem"></search-list>
               </div>
             </scroll>
           </div>
@@ -37,12 +47,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import Scroll from '@/base/scroll'
+import Song from '@/common/js/song'
 import Switches from '@/base/switches'
 import SongList from '@/base/song-list'
 import SearchBox from '@/base/search-box'
 import Suggest from '@/components/suggest'
+import SearchList from '@/base/search-list'
+import { mapGetters, mapActions } from 'vuex'
 import { searchMixin } from '@/common/js/mixin'
 
 export default {
@@ -62,16 +74,38 @@ export default {
   methods: {
     show() {
       this.showFlag = true
+      this.refreshList()
     },
     hide() {
       this.showFlag = false
+    },
+    refreshList () {
+      setTimeout(() => {
+        if (this.currentIndex === 0) {
+          this.$refs.songList.refresh()
+        } else {
+          this.$refs.searchList.refresh()
+        }
+      }, 20)
     },
     selectSuggest() {
       this.saveSearch()
     },
     switchItem(index) {
       this.currentIndex = index
-    }
+    },
+    selectSong(song, index) {
+      if(index !== 0) {
+        // 插入Song的实例
+        this.insertSong(new Song(song))
+      }
+    },
+    deleteItem(item) {
+      this.deleteSearchHistory(item)
+    },
+    ...mapActions([
+      'insertSong'
+    ])
   },
   computed: {
     ...mapGetters([
@@ -81,9 +115,10 @@ export default {
   components: {
     Scroll,
     Suggest,
+    SongList,
     Switches,
     SearchBox,
-    SongList
+    SearchList
   }
 }
 </script>

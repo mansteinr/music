@@ -22,4 +22,4 @@ export const searchHistory = (state) => {
  return typeof state.searchHistory === 'string' ? JSON.parse(state.searchHistory) : state.searchHistory
 }
 
-export const playHistory = state => state.playHistory
+export const playHistory = state => typeof state.playHistory === 'string' ? JSON.parse(state.playHistory) : state.playHistory

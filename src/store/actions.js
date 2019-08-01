@@ -87,6 +87,7 @@ export const saveSearchHistory = function ({ commit }, query) {
 }
 
 export const deleteSearchHistory = function ({ commit }, query) {
+  console.log(query, 'op')
   commit(types.SET_SEARCH_HISTORY, deleteSearch(query))
 }
 
