@@ -23,3 +23,4 @@ export const searchHistory = (state) => {
 }
 
 export const playHistory = state => typeof state.playHistory === 'string' ? JSON.parse(state.playHistory) : state.playHistory
+export const favoriteList = state =>  state.favoriteList

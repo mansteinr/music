@@ -13,7 +13,6 @@
           </h1>
         </div>
         <scroll
-          :refreshDalay="refreshDalay"
           :data="sequenceList" 
           ref="listContent" 
           class="list-content" 
