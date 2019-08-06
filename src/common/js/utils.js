@@ -119,6 +119,7 @@ export function clearSearch () {
 
 //定义常量 存储200首歌曲
 const PALY_KEY = '_play_', PLay_MAX_LENGTH = 200
+const FAVORITE_KEY = '_favorite_', FAVORITE_MAX_LENGTH = 200
 
 export function savePlay (song) {
   // 获取当前存储的数据 没有则为空数组
@@ -134,4 +135,27 @@ export function savePlay (song) {
 
 export function loadPaly () {
   return localStorage.getItem(PALY_KEY) ? JSON.parse(localStorage.getItem(PALY_KEY)) : []
+}
+
+export function saveFavorite (song) {
+  let songs = localStorage.getItem(FAVORITE_KEY) ? JSON.parse(localStorage.getItem(FAVORITE_KEY)) : []
+  insertArr(songs, song, (v) => {
+    // 比较函数 如果song存在 则移动前面
+    return v.id === song.id
+  }, FAVORITE_MAX_LENGTH)
+  localStorage.setItem(FAVORITE_KEY, JSON.stringify(songs))
+  return songs
+}
+
+export function deleteFavorite (song) {
+  let songs = localStorage.getItem(FAVORITE_KEY) ? JSON.parse(localStorage.getItem(FAVORITE_KEY)) : []
+  deleteArray(songs, (item) => {
+    return song.id === item.id
+  })
+  localStorage.setItem(FAVORITE_KEY, JSON.stringify(songs))
+  return songs
+}
+// 初始化favorite歌曲
+export function loadFavorite () {
+  return localStorage.getItem(FAVORITE_KEY) ? JSON.parse(localStorage.getItem(FAVORITE_KEY)) : []
 }

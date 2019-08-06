@@ -1,8 +1,9 @@
 
 import { playMode } from '@/api/config'
-
+import * as types from '@/common/js/utils'
+// console.log(types)
 const state = {
-  favoriteList: [],
+  favoriteList: types.loadFavorite(),
   playHistory: localStorage.getItem('_play_') || [], // 播放历史
   topList: [], // 排行榜列表
   singer: {},
