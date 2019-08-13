@@ -22,10 +22,11 @@
               <!-- getCurrentIcon当前播放歌曲样式 -->
               <i class="current" :class="getCurrentIcon(v)"></i>
               <span class="text">{{ v.name }}</span>
-              <span class="like">
-                <i></i>
+              <span class="like" @click.stop="toggleFavorite(v)">
+                <i :class="getFavoriteIcon(v)"></i>
               </span>
-              <span class="delete" @click.stop="deleteOne(v)">
+              <span class="delete"
+                @click.stop="deleteOne(v)">
                 <i class="icon-delete"></i>
               </span>
             </li>
