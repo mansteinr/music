@@ -79,12 +79,14 @@
         this.$refs.favoriteList && this.$refs.favoriteList.refresh()
         this.$refs.playList && this.$refs.playList.refresh()
       },
+      // 切换
       switchItem (index) {
         this.currentIndex = index
       },
       selectSong (song) {
         this.insertSong(song)
       },
+      // 返沪
       back () {
         this.$router.back()
       },
