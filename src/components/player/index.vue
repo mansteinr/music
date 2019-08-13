@@ -115,7 +115,7 @@
      -->
     <audio 
       ref="audio"
-      @canplay="ready"
+      @play="ready"
       @error="error"
       @timeupdate="updateTime"
       @ended="end"
@@ -137,6 +137,7 @@ import animations from 'create-keyframe-animation'
 import ProgressCircle from '@/base/progress-circle'
 import { format, shuffle } from '@/common/js/utils'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { clearTimeout } from 'timers';
 
 export default {
   mixins: [ playerMixin ],
@@ -264,6 +265,8 @@ export default {
     },
     getLyric() {
       this.currentSong.getLyric().then(res => {
+        // 防止多个歌词实例出现 歌词乱
+        if(this.currentSong.lyric !== res) return
         this.currentLyric = new Lyric(res, this.handleLyric)
         if(this.playing) {
           this.currentLyric.play()
@@ -473,6 +476,9 @@ export default {
       // 歌词存在时 要清除上一次的歌词 防止切换时 歌词来回跳动
       if(this.currentLyric) {
         this.currentLyric.stop()
+        this.currentTime = 0
+        this.playingLyric = ''
+        this.currentLineNum = 0
       }
       // nextTick 防止audio不存在 导致报错
       /**
@@ -481,7 +487,10 @@ export default {
        * true,这样就切换不了
        * 这样的的 用setTomeout而不用nextTick
        */
-      setTimeout(() => {
+      // 清除延时器 1是为了性能优化 2是防止快速切换
+      // 时，已经停止了但是歌词还在滚动
+      clearTimeout(this.tiemr)
+      this.tiemr = setTimeout(() => {
         this.$refs.audio.play()
         // currentSong是通过在列表中计算得到的 也属于class Song
         this.getLyric()
