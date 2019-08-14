@@ -1,13 +1,13 @@
-import 'babel-polyfill' // es6语法转义
 import Vue from 'vue'
+import 'babel-polyfill' // es6语法转义
 import App from './App.vue'
-import fastclick from 'fastclick'
-import router from './router'
-import VueLazyLoad from 'vue-lazyload'
-import loading from '@/base/loading'
-import '@/common/stylus/index.styl'
 import store from './store'
+import router from './router'
+import fastclick from 'fastclick'
+import '@/common/stylus/index.styl'
+import VueLazyLoad from 'vue-lazyload'
 
+Vue.config.silent = true
 Vue.config.productionTip = false
 
 fastclick.attach(document.body)
@@ -15,8 +15,6 @@ fastclick.attach(document.body)
 Vue.use(VueLazyLoad, {
   loading: require('@/common/image/default.png')
 })
-
-Vue.prototype.loading = loading
 
 new Vue({
   el: '#app',

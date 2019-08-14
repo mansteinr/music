@@ -35,6 +35,7 @@ export default {
       this.$refs.singer.style.bottom = bottom
       // 设置完成之后重新刷新一次
       this.$refs.list.refresh()
+      console.log(90909)
     },
     /**
      * 通过mpaMutations将SET_SINGER映射为setSinger

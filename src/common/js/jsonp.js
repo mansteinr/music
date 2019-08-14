@@ -9,6 +9,7 @@ export default function jsonp (url, data, options) {
     originJSONP(url, options, (err, data) => {
       if (!err && data.code === ERR_Ok) {
         resolve(data)
+        console.log(data)
       } else {
         reject(err)
       }
