@@ -4,10 +4,20 @@ import { commonParams, options } from './config'
 // const debug = process.env.NODE_ENV !== 'production'
 export function getTopList () {
   const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg'
-
+  /**
+   * Object.assign({}, commonParams, {
+        g_tk: 1928093487,
+        jsonpCallback: "jp0",
+        format: 'jsonp',
+        uin: 0,
+        needNewCode: 1,
+        platform: 'h5'
+      })
+      这样写是防止修改commonParams
+   */
   const data = Object.assign({}, commonParams, {
     g_tk: 1928093487,
-    jsonpCallback: 'jp0',
+    jsonpCallback: "jp0",
     format: 'jsonp',
     uin: 0,
     needNewCode: 1,

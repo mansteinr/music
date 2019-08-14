@@ -1,5 +1,4 @@
 
-// import axios from 'axios'
 import jsonp from '@/common/js/jsonp'
 import { axios } from '@/common/js/axios'
 import { commonParams, options } from './config.js'
@@ -21,7 +20,7 @@ export function getRecommend() {
 export function getDiscList() {
   const url = debug ? '/api/getDiscList' : 'http://ustbhuangyi.com/music/api/getDiscList'
   
-  const data = Object.assign(commonParams, {
+  const data = Object.assign({}, commonParams, {
     rnd: Math.random(),
     hostUin: 0,
     notice: 0,

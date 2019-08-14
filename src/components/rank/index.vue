@@ -49,7 +49,7 @@
         this.setTopList(item)
       },
       _getTopList () {
-        getTopList().then((res) => {
+        getTopList().then(res => {
           this.topList = res.data.topList
         })
       },
