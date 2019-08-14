@@ -9,7 +9,7 @@
 import { mapGetters } from 'vuex'
 import { getSongList } from '@/api/recommend'
 import MusicList from '@/components/music-list'
-import { createSong, isValidMusic, processSongsUrl } from '@/common/js/song'
+import { createSong, processSongsUrl } from '@/common/js/song'
 
 export default {
   data() {

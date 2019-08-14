@@ -130,14 +130,13 @@
 import Lyric from 'lyric-parser'
 import Scroll from '@/base/scroll'
 import { playMode } from '@/api/config'
+import { format } from '@/common/js/utils'
 import Playlist from '@/components/playlist'
 import ProgressBar from '@/base/progress-bar'
 import { playerMixin } from '@/common/js/mixin'
 import animations from 'create-keyframe-animation'
 import ProgressCircle from '@/base/progress-circle'
-import { format, shuffle } from '@/common/js/utils'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import { clearTimeout } from 'timers';
 
 export default {
   mixins: [ playerMixin ],
@@ -214,7 +213,7 @@ export default {
       this.$refs.middleL.style.opacity = 1 - this.touch.percent
       this.$refs.middleL.style.transitionDuration = 0
     },
-    middleTouchEnd(e) {
+    middleTouchEnd() {
       if(this.touch.percent < 0.29) return
       let offsetWidth, opacity
       // 左边滑动还是右边滑动

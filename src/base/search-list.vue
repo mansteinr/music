@@ -24,7 +24,6 @@ export default {
       this.$emit('select', value)
     },
     deleteItem(value) {
-      console.log(this.searches)
       this.$emit('deleteItem', value)
     }
   }

@@ -30,6 +30,5 @@ export function getDiscList() {
     loginUin: 0,
     picmid: 1
   })
-  console.log(data)
   return jsonp(url, data, options)
 }
