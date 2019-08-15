@@ -1,10 +1,6 @@
 <template>
-  <scroll
-    @scroll="scroll"
-    :probeType="probeType"
-    :listenScroll="listenScroll"
+  <div
     class="listview" 
-    :data = "data" 
     ref="listview">
     <ul>
       <li ref="listGroup" v-for="(v, k) in data" :key="k" class="list-group">
@@ -37,7 +33,7 @@
      <div class="list-fixed" ref="fixed" v-show="fixedTitle">
       <div class="fixed-title">{{ fixedTitle }}</div>
     </div>
-  </scroll>
+  </div>
 </template>
 
 <script>
@@ -54,7 +50,11 @@ export default {
     return {
       diff: -1,
       scrollY: -1,
-      currentIndex: 0
+      currentIndex: 0,
+      // 监听滚动事件类型，比如慢速滚动 快速滚动    // 3 代表可以监听实时滚动
+      probeType: 3,
+      click: true,
+      listenScroll: true
     }
   },
   created() {

@@ -7,9 +7,10 @@ import fastclick from 'fastclick'
 import '@/common/stylus/index.styl'
 import VueLazyLoad from 'vue-lazyload'
 
-Vue.config.silent = true
 Vue.config.productionTip = false
 
+Vue.config.silent = false
+console.log(Vue.config)
 fastclick.attach(document.body)
 
 Vue.use(VueLazyLoad, {

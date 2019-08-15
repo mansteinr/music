@@ -1,12 +1,11 @@
 <template>
-  <div ref="wrapper">
+  <div ref="wrapper" class="op">
     <slot></slot>
   </div>
 </template>
 
 <script>
   import BScroll from 'better-scroll'
-  import { setTimeout } from 'timers';
 
   export default {
     props: {
@@ -19,7 +18,7 @@
         type: Boolean,
         default: true
       },
-      data: { // b必传 当数据填充时 可以重新渲染
+      data: { // 必传 当数据填充时 可以重新渲染
         type: Array,
         default: () => []
       },

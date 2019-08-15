@@ -8,6 +8,7 @@ import SingerDetail from '../components/singer-detail'
 import Disc from '../components/disc'
 import TopList from '../components/top-list'
 import UserCenter from '../components/user-cener'
+import Demo from '../components/demo/demo'
 
 Vue.use(Router)
 
@@ -16,6 +17,10 @@ export default new Router({
   routes: [{
     path: '/',
     redirect: '/recommend'
+  }, {
+    path: '/demo',
+    name: 'Demo',
+    component: Demo
   }, {
     path: '/rank',
     name: 'Rank',
