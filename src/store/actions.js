@@ -127,11 +127,11 @@ export const deleteSong = function({ commit, state }, song) {
 
 // 清空playlist
 export const deleteSongList = function({commit}) {
-    // 提交commit
-    commit(types.SET_PLAYLIST, [])
-    commit(types.SET_SEQUENCE_LIST, [])
-    commit(types.SET_CURRENT_INDEX, -1)
-    commit(types.SET_PLAYING_STATE, false)
+  // 提交commit
+  commit(types.SET_PLAYLIST, [])
+  commit(types.SET_SEQUENCE_LIST, [])
+  commit(types.SET_CURRENT_INDEX, -1)
+  commit(types.SET_PLAYING_STATE, false)
 }
 // 收藏歌曲
 export const savePlayHistory = function ({ commit }, song) {
