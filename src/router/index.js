@@ -9,6 +9,7 @@ import Disc from '../components/disc'
 import TopList from '../components/top-list'
 import UserCenter from '../components/user-cener'
 import Demo from '../components/demo/demo'
+import Fabric from '../components/fabric'
 
 Vue.use(Router)
 
@@ -53,8 +54,11 @@ export default new Router({
         path: ':id',
         component: SingerDetail
     }]
-    }, {
-      path: '/user',
-      component: UserCenter
+  }, {
+    path: '/user',
+    component: UserCenter
+  }, {
+    path: '/fabric',
+    component: Fabric
   }]
 })

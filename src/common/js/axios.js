@@ -29,7 +29,7 @@ export function axios(url, data, method = 'post', params = {}, responseType = 'j
       if(res.data.code === 0) {
         resolve(res.data)
       } else {
-        console.log(90)
+        reject('失败')
       }
     }).catch(err => {
       loading.hide()

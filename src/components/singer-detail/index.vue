@@ -55,7 +55,7 @@ import { createSong, isValidMusic, processSongsUrl } from '@/common/js/song'
       },
       normalizeSongs(list) {
         let ret = []
-        list.forEach((v, k) => {
+        list.forEach(v => {
           let { musicData } = v
           if (isValidMusic(musicData)) {
             ret.push(createSong(musicData))

@@ -1,7 +1,7 @@
 <template>
   <div class="m-header">
     <div class="icon"></div>
-    <h1 class="text">韩燚音乐</h1>
+    <router-link tag="h1" class="text" to="/fabric">韩燚音乐</router-link>
     <router-link tag="div" class="mine" to="/user">
       <i class="icon-mine"></i>
     </router-link>

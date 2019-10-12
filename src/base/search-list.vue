@@ -1,7 +1,7 @@
 <template>
   <div class="search-list" v-show="searches.length">
     <transition-group tag="ul" name="list">
-      <li @click="selectItem(v)" class="search-item" v-for="(v, k) in searches" :key="k">
+      <li @click="selectItem(v)" class="search-item" v-for="v in searches" :key="v">
         <span class="text"> {{ v }} </span>
         <span class="icon" @click.stop="deleteItem(v)">
           <i class="icon-delete"></i>
