@@ -112,7 +112,6 @@ export default {
   },
   watch: {
     query(value) {
-      // console.log(value)
       if(!value) {
         setTimeout(() => {
           // 重新刷新shortcut组件

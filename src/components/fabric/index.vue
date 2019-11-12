@@ -35,22 +35,16 @@
         this.$router.back()
       },
       loadImage () {
-        console.log('loadImage')
       },
       loadTemplate () {
-        console.log('loadTemplate')
       },
       loadBackground () {
-        console.log('loadBackground')
       },
       loadPaint () {
-        console.log('loadPaint')
       },
       loadText () {
-        console.log('loadText')
       },
       loadPaper () {
-        console.log('loadPaper')
       }
     },
     mounted() {

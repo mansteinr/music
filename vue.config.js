@@ -1,24 +1,23 @@
-    
 const path = require('path')
 const bodyParser = require('body-parser')
 const axios = require('axios')
 
-function resolve (dir) {
+function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
 module.exports = {
-configureWebpack: {
+  configureWebpack: {
     resolve: {
       alias: {
-        'vue$': 'vue/dist/vue.esm.js' 
+        'vue$': 'vue/dist/vue.esm.js'
       }
     }
   },
   devServer: {
     hot: true, // 实时打包编译
-    inline: true,  // 表示实时刷新浏览器
-    port: '8021',   // 指定打开浏览器的端口号
+    inline: true, // 表示实时刷新浏览器
+    port: '8021', // 指定打开浏览器的端口号
     before(app) {
       app.get('/api/getDiscList', function (req, res) {
         var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg' // 服务端请求原api
@@ -30,8 +29,8 @@ configureWebpack: {
           params: req.query //浏览器请求该接口所带来的参数 
         }).then((response) => { //成功回调
           res.json(response.data) //response是QQ接口返回的，res是我们自己的。所以要把数据输出给浏览器前端
-        }).catch((e) => { //如果接口有问题，catch（）
-          console.log(e)
+        }).catch((err) => { //如果接口有问题，catch（）
+          console.log(err.message)
         })
       })
 
@@ -53,15 +52,13 @@ configureWebpack: {
             }
           }
           res.json(ret)
-        }).catch((e) => {
-          console.log(e)
+        }).catch(err => {
+          console.log(err.message)
         })
       })
 
       app.get('/api/lyric', function (req, res) {
-
         const url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
-
         axios.get(url, {
           headers: {
             referer: 'https://c.y.qq.com/',
@@ -72,15 +69,14 @@ configureWebpack: {
           let ret = response.data
           if (typeof ret === 'string') {
             // 回掉函数 截取{.+}里面的东西
-            const reg = /^\w+\(({.+})\)$/
-            const matches = ret.match(reg)
+            const reg = /^\w+\(({.+})\)$/, matches = ret.match(reg)
             if (matches) {
               ret = JSON.parse(matches[1])
             }
           }
           res.json(ret)
-        }).catch((e) => {
-          console.log(e)
+        }).catch(err => {
+          console.log(err.message)
         })
       })
 
@@ -127,7 +123,6 @@ configureWebpack: {
         }).catch((e) => {
           console.log(e)
         })
-
       })
     }
   },

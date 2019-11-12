@@ -131,7 +131,6 @@ export default {
         // 模糊度
         blur = Math.min(20 * percent, 20)
       }
-      // console.log(blur)
       // this.$refs.bgImage.style['WebkitFilter'] = `blur(${blur})px`
       // 当layer滚到顶部 设置样式
       if(newY < this.minTranslateY) {
